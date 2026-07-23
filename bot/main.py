@@ -17,6 +17,7 @@ async def message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         user_id,
         text
     )
+    print(f"Сохранено: {text}")
 
     await update.message.reply_text(
         f"Получено сообщение:\n{text}"
