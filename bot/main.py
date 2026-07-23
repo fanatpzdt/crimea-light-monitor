@@ -1,7 +1,7 @@
 import os
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
-from database import create_table, save_message
+from database import create_table, create_reports_table
 from database import connect
 from parser import parse_message
 
