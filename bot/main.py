@@ -20,6 +20,7 @@ async def message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 def main():
+        create_table()
     token = os.getenv("BOT_TOKEN")
 
     app = Application.builder().token(token).build()
