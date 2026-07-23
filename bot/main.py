@@ -1,14 +1,18 @@
 import os
 from telegram import Update
+from telegram.ext import CallbackQueryHandler
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 from database import create_table, create_reports_table
 from database import connect
 from parser import parse_message
+from keyboards import power_keyboard, cities_keyboard
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
     await update.message.reply_text(
-        "⚡ CrimeaLightBot запущен.\n"
-        "Отправь сообщение об отключении света."
+        "⚡ Crimea Light Monitor\n\n"
+        "Что сейчас происходит?",
+        reply_markup=power_keyboard()
     )
 
 async def message(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -76,7 +80,9 @@ def main():
     token = os.getenv("BOT_TOKEN")
 
     app = Application.builder().token(token).build()
-
+    app.add_handler(
+    CallbackQueryHandler(button)
+    )
     app.add_handler(CommandHandler("start", start))
 
     app.add_handler(CommandHandler("stats", stats))
@@ -95,3 +101,28 @@ def main():
 
 if __name__ == "__main__":
     main()
+async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    query = update.callback_query
+
+    await query.answer()
+
+
+    if query.data == "no_power":
+
+        context.user_data["status"] = "no_power"
+
+        await query.edit_message_text(
+            "Выберите город:",
+            reply_markup=cities_keyboard()
+        )
+
+
+    elif query.data == "power_ok":
+
+        context.user_data["status"] = "power_ok"
+
+        await query.edit_message_text(
+            "Выберите город:",
+            reply_markup=cities_keyboard()
+        )
