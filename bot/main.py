@@ -9,7 +9,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "Отправь сообщение об отключении света."
     )
 
-
 async def message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
     save_message(text)
@@ -17,7 +16,6 @@ async def message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         f"Получено сообщение:\n{text}"
     )
-
 
 def main():
     create_table()
