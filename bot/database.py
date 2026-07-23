@@ -26,7 +26,28 @@ def create_table():
     conn.commit()
     conn.close()
 
+def save_report(user_id, city, status):
 
+    conn = connect()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    INSERT INTO reports
+    (
+        user_id,
+        city,
+        status
+    )
+    VALUES (?, ?, ?)
+    """,
+    (
+        user_id,
+        city,
+        status
+    ))
+
+    conn.commit()
+    conn.close()
 def save_message(
     user_id,
     text,
