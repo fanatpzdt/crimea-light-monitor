@@ -8,7 +8,10 @@ from database import (
     create_alerts_table,
     save_report,
     get_city_stats,
-get_power_ok_count
+    get_power_ok_count,
+    set_city_status,
+    get_city_status
+
 )
 
 from database import connect
@@ -49,7 +52,10 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
             city,
             status
         )
-
+       set_city_status(
+            city,
+            status
+        )         
 
         count = get_city_stats(city)
 
