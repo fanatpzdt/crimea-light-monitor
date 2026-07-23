@@ -1,7 +1,11 @@
 import os
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, CallbackQueryHandler, filters, ContextTypes
-from database import create_table, create_reports_table
+from database import (
+    create_table,
+    create_reports_table,
+    save_report
+)
 from database import connect
 from parser import parse_message
 from keyboards import power_keyboard, cities_keyboard
