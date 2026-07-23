@@ -29,8 +29,11 @@ def cities_keyboard():
         "Ялта",
         "Керчь",
         "Севастополь",
-        "Евпатория"
+        "Евпатория",
+        "Феодосия",
+        "Джанкой"
     ]
+
 
     keyboard = []
 
@@ -43,5 +46,6 @@ def cities_keyboard():
                 )
             ]
         )
+
 
     return InlineKeyboardMarkup(keyboard)
