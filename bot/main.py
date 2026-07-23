@@ -32,7 +32,42 @@ async def message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         problem=data["problem"],
         duration=data["duration"]
     )
+async def stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
+    conn = connect()
+    cursor = conn.cursor()
+
+
+    cursor.execute("""
+    SELECT city, COUNT(*)
+    FROM messages
+    GROUP BY city
+    ORDER BY COUNT(*) DESC
+    """)
+
+
+    rows = cursor.fetchall()
+
+    conn.close()
+
+
+    if not rows:
+        await update.message.reply_text(
+            "Пока нет данных"
+        )
+        return
+
+
+    text = "⚡ Статистика:\n\n"
+
+
+    for city, count in rows:
+
+        if city:
+            text += f"{city}: {count} сообщений\n"
+
+
+    await update.message.reply_text(text)
 
     await update.message.reply_text(
         f"Получено сообщение:\n{text}"
