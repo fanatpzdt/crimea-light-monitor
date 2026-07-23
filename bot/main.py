@@ -6,11 +6,12 @@ from database import (
     create_table,
     create_reports_table,
     create_alerts_table,
+create_city_status_table,
     save_report,
     get_city_stats,
     get_power_ok_count,
     set_city_status,
-    get_city_status
+    get_city_status,
 
 )
 
