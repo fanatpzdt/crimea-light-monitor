@@ -11,7 +11,12 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
-    save_message(text)
+    user_id = update.message.from_user.id
+
+    save_message(
+        user_id,
+        text
+    )
 
     await update.message.reply_text(
         f"Получено сообщение:\n{text}"
