@@ -151,3 +151,18 @@ def get_city_stats(city):
 
 
     return result
+
+def create_alerts_table():
+
+    conn = connect()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS alerts (
+        city TEXT PRIMARY KEY,
+        message_id INTEGER
+    )
+    """)
+
+    conn.commit()
+    conn.close()
