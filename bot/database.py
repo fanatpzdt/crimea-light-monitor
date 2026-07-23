@@ -214,3 +214,22 @@ def save_alert(city, message_id):
 
     conn.commit()
     conn.close()
+
+def get_power_ok_count(city):
+
+    conn = connect()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT COUNT(*)
+    FROM reports
+    WHERE city = ?
+    AND status = 'power_ok'
+    """,
+    (city,))
+
+    count = cursor.fetchone()[0]
+
+    conn.close()
+
+    return count
