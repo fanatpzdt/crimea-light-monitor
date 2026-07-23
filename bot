@@ -1,1 +1,2 @@
 bot/main.py
+print("Crimea Light Bot started")
