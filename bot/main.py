@@ -41,6 +41,8 @@ async def stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
     cursor.execute("""
     SELECT city, COUNT(*)
     FROM messages
+    WHERE created_at >= datetime('now', '-24 hours')
+    AND city IS NOT NULL
     GROUP BY city
     ORDER BY COUNT(*) DESC
     """)
@@ -53,35 +55,20 @@ async def stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if not rows:
         await update.message.reply_text(
-            "Пока нет данных"
+            "За последние 24 часа сообщений нет"
         )
         return
 
 
-    text = "⚡ Статистика:\n\n"
+    text = "⚡ Crimea Light Monitor\n\n"
+    text += "За последние 24 часа:\n\n"
 
 
     for city, count in rows:
-
-        if city:
-            text += f"{city}: {count} сообщений\n"
+        text += f"🏙 {city}: {count} сообщений\n"
 
 
     await update.message.reply_text(text)
-
-    await update.message.reply_text(
-        f"Получено сообщение:\n{text}"
-    )
-
-    save_message(
-        user_id,
-        text
-    )
-    print(f"Сохранено: {text}")
-
-    await update.message.reply_text(
-        f"Получено сообщение:\n{text}"
-    )
 
 def main():
     create_table()
