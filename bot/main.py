@@ -42,7 +42,49 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "Выберите город:",
             reply_markup=cities_keyboard()
         )
-        
+            elif query.data.startswith("city_"):
+
+        city = query.data.replace(
+            "city_",
+            ""
+        )
+
+        status = context.user_data.get(
+            "status"
+        )
+
+
+        user_id = query.from_user.id
+
+
+        save_report(
+            user_id,
+            city,
+            status
+        )
+
+
+        if status == "no_power":
+
+            answer = (
+                f"🔴 Записал\n\n"
+                f"Город: {city}\n"
+                f"Статус: нет света"
+            )
+
+        else:
+
+            answer = (
+                f"🟢 Записал\n\n"
+                f"Город: {city}\n"
+                f"Статус: свет есть"
+            )
+
+
+        await query.edit_message_text(
+            answer
+        )
+    
 async def message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     text = update.message.text
