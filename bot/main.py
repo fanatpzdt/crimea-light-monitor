@@ -12,7 +12,8 @@ create_city_status_table,
     get_power_ok_count,
     set_city_status,
     get_city_status,
-
+    set_power_start,
+    get_power_start
 )
 
 from database import connect
