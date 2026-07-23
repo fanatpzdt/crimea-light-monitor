@@ -69,45 +69,27 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         if status == "no_power":
 
+            count = get_city_stats(city)
+
             answer = (
                 f"🔴 Записал\n\n"
-                f"Город: {city}\n"
-                f"Статус: нет света"
+                f"📍 {city}\n"
+                f"Нет света\n\n"
+                f"Подтвердили: {count} человек"
             )
 
         else:
 
             answer = (
                 f"🟢 Записал\n\n"
-                f"Город: {city}\n"
-                f"Статус: свет есть"
+                f"📍 {city}\n"
+                f"Свет есть"
             )
 
 
-        count = get_city_stats(city)
-
-
-if status == "no_power":
-
-    answer = (
-        f"🔴 Записал\n\n"
-        f"📍 {city}\n"
-        f"Нет света\n\n"
-        f"Подтвердили: {count} человек"
-    )
-
-else:
-
-    answer = (
-        f"🟢 Записал\n\n"
-        f"📍 {city}\n"
-        f"Свет есть"
-    )
-
-
-await query.edit_message_text(
-    answer
-)
+        await query.edit_message_text(
+            answer
+        )
     
 async def message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
