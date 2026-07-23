@@ -34,7 +34,6 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await query.answer()
 
-
     if query.data.startswith("city_"):
 
         city = query.data.replace(
@@ -44,63 +43,26 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         status = context.user_data.get("status")
 
-        user_id = query.from_user.id
+        if not status:
+            await query.edit_message_text(
+                "Ошибка: сначала выберите состояние света"
+            )
+            return
 
+        user_id = query.from_user.id
 
         save_report(
             user_id,
             city,
             status
         )
-       set_city_status(
+
+        set_city_status(
             city,
             status
-        )         
+        )
 
         count = get_city_stats(city)
-
-
-        if status == "no_power":
-
-            if count >= ALERT_THRESHOLD:
-
-                await publish(
-                    context.application,
-                    city,
-                    count
-                )
-
-
-            answer = (
-                f"🔴 Записал\n\n"
-                f"📍 {city}\n"
-                f"Нет света\n\n"
-                f"Подтвердили: {count} человек"
-            )
-
-
-        elif status == "power_ok":
-
-            ok_count = get_power_ok_count(city)
-
-
-            await publish_restore(
-                context.application,
-                city,
-                ok_count
-            )
-
-
-            answer = (
-                f"🟢 Записал\n\n"
-                f"📍 {city}\n"
-                f"Свет есть"
-            )
-
-
-        await query.edit_message_text(
-            answer
-        )
     
 async def message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
