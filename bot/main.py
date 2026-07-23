@@ -4,6 +4,7 @@ from telegram.ext import Application, CommandHandler, MessageHandler, CallbackQu
 from database import (
     create_table,
     create_reports_table,
+    create_alerts_table,
     save_report,
     get_city_stats
 )
@@ -153,6 +154,7 @@ async def stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
 def main():
     create_table()
     create_reports_table()
+    create_alerts_table()
     token = os.getenv("BOT_TOKEN")
 
     app = Application.builder().token(token).build()
