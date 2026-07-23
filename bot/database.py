@@ -31,20 +31,50 @@ def save_report(user_id, city, status):
     conn = connect()
     cursor = conn.cursor()
 
+
     cursor.execute("""
-    INSERT INTO reports
-    (
-        user_id,
-        city,
-        status
-    )
-    VALUES (?, ?, ?)
+    SELECT id 
+    FROM reports
+    WHERE user_id = ?
     """,
-    (
-        user_id,
-        city,
-        status
-    ))
+    (user_id,))
+
+
+    existing = cursor.fetchone()
+
+
+    if existing:
+
+        cursor.execute("""
+        UPDATE reports
+        SET city = ?,
+            status = ?,
+            created_at = CURRENT_TIMESTAMP
+        WHERE user_id = ?
+        """,
+        (
+            city,
+            status,
+            user_id
+        ))
+
+    else:
+
+        cursor.execute("""
+        INSERT INTO reports
+        (
+            user_id,
+            city,
+            status
+        )
+        VALUES (?, ?, ?)
+        """,
+        (
+            user_id,
+            city,
+            status
+        ))
+
 
     conn.commit()
     conn.close()
