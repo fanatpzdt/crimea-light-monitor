@@ -63,9 +63,13 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
             city,
             status
         )
+        
+if status == "no_power":
+
+            set_power_start(city)
 
         count = get_city_stats(city)
-    
+        
 async def message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     text = update.message.text
