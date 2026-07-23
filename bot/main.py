@@ -72,6 +72,7 @@ async def stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 def main():
     create_table()
+    create_reports_table()
     token = os.getenv("BOT_TOKEN")
 
     app = Application.builder().token(token).build()
