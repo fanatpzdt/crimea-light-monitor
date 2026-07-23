@@ -166,3 +166,51 @@ def create_alerts_table():
 
     conn.commit()
     conn.close()
+
+def get_alert(city):
+
+    conn = connect()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        SELECT message_id
+        FROM alerts
+        WHERE city = ?
+        """,
+        (city,)
+    )
+
+    result = cursor.fetchone()
+
+    conn.close()
+
+    if result:
+        return result[0]
+
+    return None
+
+
+
+def save_alert(city, message_id):
+
+    conn = connect()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        INSERT OR REPLACE INTO alerts
+        (
+            city,
+            message_id
+        )
+        VALUES (?, ?)
+        """,
+        (
+            city,
+            message_id
+        )
+    )
+
+    conn.commit()
+    conn.close()
