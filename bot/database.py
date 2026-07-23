@@ -191,30 +191,27 @@ def get_alert(city):
     return None
 
 
-
 def save_alert(city, message_id):
 
     conn = connect()
     cursor = conn.cursor()
 
-    cursor.execute(
-        """
-        INSERT OR REPLACE INTO alerts
-        (
-            city,
-            message_id
-        )
-        VALUES (?, ?)
-        """,
-        (
-            city,
-            message_id
-        )
+    cursor.execute("""
+    INSERT OR REPLACE INTO alerts
+    (
+        city,
+        message_id
     )
+    VALUES (?, ?)
+    """,
+    (
+        city,
+        message_id
+    ))
 
     conn.commit()
     conn.close()
-
+    
 def get_power_ok_count(city):
 
     conn = connect()
