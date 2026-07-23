@@ -17,6 +17,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "Что сейчас происходит?",
         reply_markup=power_keyboard()
     )
+    
 async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     query = update.callback_query
@@ -42,7 +43,9 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "Выберите город:",
             reply_markup=cities_keyboard()
         )
-            elif query.data.startswith("city_"):
+
+
+    elif query.data.startswith("city_"):
 
         city = query.data.replace(
             "city_",
@@ -52,7 +55,6 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
         status = context.user_data.get(
             "status"
         )
-
 
         user_id = query.from_user.id
 
