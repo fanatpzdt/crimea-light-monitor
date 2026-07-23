@@ -4,7 +4,8 @@ from telegram.ext import Application, CommandHandler, MessageHandler, CallbackQu
 from database import (
     create_table,
     create_reports_table,
-    save_report
+    save_report,
+    get_city_stats
 )
 from database import connect
 from parser import parse_message
@@ -83,9 +84,30 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
 
 
-        await query.edit_message_text(
-            answer
-        )
+        count = get_city_stats(city)
+
+
+if status == "no_power":
+
+    answer = (
+        f"🔴 Записал\n\n"
+        f"📍 {city}\n"
+        f"Нет света\n\n"
+        f"Подтвердили: {count} человек"
+    )
+
+else:
+
+    answer = (
+        f"🟢 Записал\n\n"
+        f"📍 {city}\n"
+        f"Свет есть"
+    )
+
+
+await query.edit_message_text(
+    answer
+)
     
 async def message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
