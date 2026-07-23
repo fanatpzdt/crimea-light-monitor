@@ -127,6 +127,7 @@ def main():
     create_table()
     create_reports_table()
     create_alerts_table()
+    create_city_status_table()
     token = os.getenv("BOT_TOKEN")
 
     app = Application.builder().token(token).build()
