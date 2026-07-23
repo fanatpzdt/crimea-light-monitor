@@ -233,3 +233,64 @@ def get_power_ok_count(city):
     conn.close()
 
     return count
+
+def create_city_status_table():
+
+    conn = connect()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS city_status (
+        city TEXT PRIMARY KEY,
+        status TEXT,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+    """)
+
+    conn.commit()
+    conn.close()
+    def set_city_status(city, status):
+
+    conn = connect()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    INSERT OR REPLACE INTO city_status
+    (
+        city,
+        status
+    )
+    VALUES (?, ?)
+    """,
+    (
+        city,
+        status
+    ))
+
+    conn.commit()
+    conn.close()
+
+
+
+def get_city_status(city):
+
+    conn = connect()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        SELECT status
+        FROM city_status
+        WHERE city = ?
+        """,
+        (city,)
+    )
+
+    result = cursor.fetchone()
+
+    conn.close()
+
+    if result:
+        return result[0]
+
+    return None
