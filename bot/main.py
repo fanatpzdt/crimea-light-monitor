@@ -32,86 +32,69 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.answer()
 
 
-    if query.data == "no_power":
-
-        context.user_data["status"] = "no_power"
-
-        await query.edit_message_text(
-            "Выберите город:",
-            reply_markup=cities_keyboard()
-        )
-
-
-    elif query.data == "power_ok":
-
-        context.user_data["status"] = "power_ok"
-
-        await query.edit_message_text(
-            "Выберите город:",
-            reply_markup=cities_keyboard()
-        )
-
-
-    elif query.data.startswith("city_"):
+    if query.data.startswith("city_"):
 
         city = query.data.replace(
             "city_",
             ""
         )
 
-        status = context.user_data.get(
-            "status"
-        )
+        status = context.user_data.get("status")
 
         user_id = query.from_user.id
 
 
         save_report(
-    user_id,
-    city,
-    status
-)
-
-count = get_city_stats(city)
-
-if status == "no_power" and count >= ALERT_THRESHOLD:
-    await publish(
-        context.application,
-        city,
-        count
-    )
-
-if status == "no_power":
-
-    answer = (
-        f"🔴 Записал\n\n"
-        f"📍 {city}\n"
-        f"Нет света\n\n"
-        f"Подтвердили: {count} человек"
-    )
-if status == "power_ok":
-
-    from channel import publish_restore
-    from database import get_power_ok_count
-
-    ok_count = get_power_ok_count(city)
+            user_id,
+            city,
+            status
+        )
 
 
-    await publish_restore(
-        context.application,
-        city,
-        ok_count
-    )
-    
-else:
+        count = get_city_stats(city)
 
-    answer = (
-        f"🟢 Записал\n\n"
-        f"📍 {city}\n"
-        f"Свет есть"
-    )
 
-await query.edit_message_text(answer)
+        if status == "no_power":
+
+            if count >= ALERT_THRESHOLD:
+
+                await publish(
+                    context.application,
+                    city,
+                    count
+                )
+
+
+            answer = (
+                f"🔴 Записал\n\n"
+                f"📍 {city}\n"
+                f"Нет света\n\n"
+                f"Подтвердили: {count} человек"
+            )
+
+
+        elif status == "power_ok":
+
+            ok_count = get_power_ok_count(city)
+
+
+            await publish_restore(
+                context.application,
+                city,
+                ok_count
+            )
+
+
+            answer = (
+                f"🟢 Записал\n\n"
+                f"📍 {city}\n"
+                f"Свет есть"
+            )
+
+
+        await query.edit_message_text(
+            answer
+        )
     
 async def message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
