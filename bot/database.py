@@ -129,3 +129,25 @@ def create_reports_table():
 
     conn.commit()
     conn.close()
+def get_city_stats(city):
+
+    conn = connect()
+    cursor = conn.cursor()
+
+
+    cursor.execute("""
+    SELECT COUNT(*)
+    FROM reports
+    WHERE city = ?
+    AND status = 'no_power'
+    """,
+    (city,))
+
+
+    result = cursor.fetchone()[0]
+
+
+    conn.close()
+
+
+    return result
