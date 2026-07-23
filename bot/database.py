@@ -305,3 +305,52 @@ def get_power_ok_count(city):
     conn.close()
 
     return result[0]
+def set_power_start(city):
+
+    conn = connect()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS power_events (
+        city TEXT PRIMARY KEY,
+        started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+    """)
+
+    cursor.execute("""
+    INSERT OR REPLACE INTO power_events
+    (
+        city
+    )
+    VALUES (?)
+    """,
+    (
+        city,
+    ))
+
+    conn.commit()
+    conn.close()
+
+def get_power_start(city):
+
+    conn = connect()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT started_at
+    FROM power_events
+    WHERE city = ?
+    """,
+    (
+        city,
+    ))
+
+    result = cursor.fetchone()
+
+    conn.close()
+
+    if result:
+        return result[0]
+
+    return None
+
