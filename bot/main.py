@@ -51,7 +51,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
             return
 
-        user_id = query.from_user.id
+                user_id = query.from_user.id
 
         save_report(
             user_id,
@@ -59,7 +59,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
             status
         )
 
-                set_city_status(
+        set_city_status(
             city,
             status
         )
