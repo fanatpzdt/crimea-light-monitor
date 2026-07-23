@@ -11,6 +11,8 @@ from database import (
 from database import connect
 from parser import parse_message
 from keyboards import power_keyboard, cities_keyboard
+from channel import publish
+from config import ALERT_THRESHOLD
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
