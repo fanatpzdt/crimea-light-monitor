@@ -285,7 +285,7 @@ def get_city_status(city):
 
     return None
 
-    def get_power_ok_count(city):
+def get_power_ok_count(city):
 
     conn = connect()
     cursor = conn.cursor()
@@ -300,8 +300,8 @@ def get_city_status(city):
         (city,)
     )
 
-    count = cursor.fetchone()[0]
+    result = cursor.fetchone()
 
     conn.close()
 
-    return count
+    return result[0]
