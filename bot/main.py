@@ -1,4 +1,5 @@
 import os
+from channel import publish, publish_restore
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, CallbackQueryHandler, filters, ContextTypes
 from database import (
@@ -6,8 +7,10 @@ from database import (
     create_reports_table,
     create_alerts_table,
     save_report,
-    get_city_stats
+    get_city_stats,
+get_power_ok_count
 )
+
 from database import connect
 from parser import parse_message
 from keyboards import power_keyboard, cities_keyboard
@@ -86,7 +89,20 @@ if status == "no_power":
         f"Нет света\n\n"
         f"Подтвердили: {count} человек"
     )
+if status == "power_ok":
 
+    from channel import publish_restore
+    from database import get_power_ok_count
+
+    ok_count = get_power_ok_count(city)
+
+
+    await publish_restore(
+        context.application,
+        city,
+        ok_count
+    )
+    
 else:
 
     answer = (
