@@ -11,8 +11,31 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 async def message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
     text = update.message.text
     user_id = update.message.from_user.id
+
+
+    data = parse_message(text)
+
+
+    print("Распознано:")
+    print(data)
+
+
+    save_message(
+        user_id=user_id,
+        text=text,
+        city=data["city"],
+        district=data["district"],
+        problem=data["problem"],
+        duration=data["duration"]
+    )
+
+
+    await update.message.reply_text(
+        f"Получено сообщение:\n{text}"
+    )
 
     save_message(
         user_id,
