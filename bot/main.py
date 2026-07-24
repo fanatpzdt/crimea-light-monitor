@@ -113,10 +113,10 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     elif query.data.startswith("city_"):
 
-    city = query.data.replace(
+        city = query.data.replace(
         "city_",
         ""
-    )
+        )
 
     print("ГОРОД:", city)
 
