@@ -184,15 +184,13 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if query.data.startswith("city_"):
 
-    city = query.data.replace(
+        city = query.data.replace(
         "city_",
         ""
     )
 
     print("ГОРОД:", city)
 
-
-    # первый выбор города для профиля
 
     if context.user_data.get("profile_city"):
 
