@@ -88,14 +88,82 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if query.data.startswith("found_"):
 
-        city = query.data.replace(
-            "found_",
-            ""
+       city = query.data.replace(
+        "found_",
+        ""
         )
 
-        print("ПОИСК ВЫБРАЛ ГОРОД:", city)
+    print("ПОИСК ВЫБРАЛ ГОРОД:", city)
 
         query.data = f"city_{city}"
+
+
+# обработка выбора города
+    if query.data.startswith("city_"):
+
+        city = query.data.replace(
+        "city_",
+        ""
+        )
+
+    print("ГОРОД:", city)
+
+        status = context.user_data.get("status")
+
+    print("СТАТУС:", status)
+
+
+    if status is None:
+
+        await query.edit_message_text(
+            "Ошибка. Нажмите /start"
+        )
+
+        return
+
+
+    user_id = query.from_user.id
+
+
+    save_report(
+        user_id,
+        city,
+        status
+    )
+
+
+    set_city_status(
+        city,
+        status
+    )
+
+
+    count = get_city_stats(city)
+
+
+    if status == "no_power":
+
+        text = (
+            f"🔴 Записано\n\n"
+            f"📍 {city}\n"
+            f"Нет света\n\n"
+            f"Подтвердили: {count}"
+        )
+
+    else:
+
+        text = (
+            f"🟢 Записано\n\n"
+            f"📍 {city}\n"
+            f"Свет есть"
+        )
+
+
+    await query.edit_message_text(
+        text
+    )
+
+    return
 
 async def message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
