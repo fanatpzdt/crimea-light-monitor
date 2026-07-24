@@ -110,17 +110,45 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         count = get_city_stats(city)
 
-        answer = (
-            f"Записал\n\n"
-            f"Город: {city}\n"
-            f"Статус: {status}\n"
-            f"Подтвердили: {count}"
+
+if status == "no_power":
+
+    if count >= ALERT_THRESHOLD:
+
+        await publish(
+            context.application,
+            city,
+            count
         )
 
-        await query.edit_message_text(
-            answer
-        )
+    answer = (
+        f"🔴 Записал\n\n"
+        f"📍 {city}\n"
+        f"Нет света\n\n"
+        f"Подтвердили: {count} человек"
+    )
 
+
+elif status == "power_ok":
+
+    ok_count = get_power_ok_count(city)
+
+    await publish_restore(
+        context.application,
+        city,
+        ok_count
+    )
+
+    answer = (
+        f"🟢 Записал\n\n"
+        f"📍 {city}\n"
+        f"Свет есть"
+    )
+
+
+await query.edit_message_text(
+    answer
+)
 
 
 async def message(update: Update, context: ContextTypes.DEFAULT_TYPE):
