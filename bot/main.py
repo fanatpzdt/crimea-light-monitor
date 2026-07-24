@@ -23,6 +23,7 @@ from database import (
     create_table,
     create_reports_table,
     create_alerts_table,
+    create_users_table,
     create_city_status_table,
     create_power_events_table,
     save_report,
@@ -250,6 +251,7 @@ def main():
     create_table()
     create_reports_table()
     create_alerts_table()
+    create_users_table()
     create_city_status_table()
     create_power_events_table()
     
