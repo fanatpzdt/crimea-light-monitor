@@ -99,11 +99,14 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if query.data.startswith("found_"):
 
         city = query.data.replace(
-            "found_",
-            ""
+
+        "found_",
+
+        ""
+
         )
 
-        print("ПОИСК ВЫБРАЛ ГОРОД:", city)
+    print("ПОИСК ВЫБРАЛ ГОРОД:", city)
 
         query.data = "city_" + city
 
