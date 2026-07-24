@@ -171,7 +171,7 @@ async def message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
     user_id = update.message.from_user.id
     
-        if context.user_data.get("search_mode"):
+    if context.user_data.get("search_mode"):
 
         results = search_city(text)
 
