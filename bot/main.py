@@ -155,6 +155,19 @@ async def message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     text = update.message.text
     user_id = update.message.from_user.id
+    results = search_city(text)
+
+    if results:
+
+        await update.message.reply_text(
+            "Нашёл города:\n\n" +
+            "\n".join(
+                f"📍 {city}" for city in results
+            )
+        )
+
+        return
+        
 async def message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     text = update.message.text
