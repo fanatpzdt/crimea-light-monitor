@@ -106,12 +106,12 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
        city = query.data.replace(
         "found_",
         ""
-    )
+       )
 
-    print("ПОИСК ВЫБРАЛ ГОРОД:", city)
+       
+       print("ПОИСК ВЫБРАЛ ГОРОД:", city)
 
-         
-        return
+       return
     
     status = context.user_data.get("status")
 
