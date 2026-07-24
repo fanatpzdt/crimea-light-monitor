@@ -51,7 +51,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # пользователь нажал "Нет света"
     if query.data == "no_power":
 
-        context.user_data["status"] = "no_power"
+    context.user_data["status"] = "no_power"
 
         await query.edit_message_text(
             "Выберите город:",
@@ -132,8 +132,7 @@ if status == "no_power":
 elif status == "power_ok":
 
     ok_count = get_power_ok_count(city)
-
-    await publish_restore(
+        await publish_restore(
         context.application,
         city,
         ok_count
@@ -148,8 +147,8 @@ elif status == "power_ok":
 
 await query.edit_message_text(
     answer
-)
-
+    
+    )
 
 async def message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
