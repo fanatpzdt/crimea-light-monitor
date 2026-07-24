@@ -75,7 +75,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.answer()
 
     print("НАЖАТА КНОПКА:", query.data)
-    city = None
+
 
     if query.data == "search_city":
 
@@ -110,7 +110,8 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
 
         return
-          
+
+
     if query.data == "back_city":
 
         context.user_data["search_mode"] = False
@@ -121,21 +122,61 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
 
         return
-    
-        city = None
+
+
+    # город из поиска
 
     if query.data.startswith("found_"):
 
-       city = query.data.replace(
-        "found_",
-        ""
-       )
+        city = query.data.replace(
+            "found_",
+            ""
+        )
 
-       
-       print("ПОИСК ВЫБРАЛ ГОРОД:", city)
+        print("ПОИСК ВЫБРАЛ ГОРОД:", city)
 
-       return
-    
+    # обычный город
+
+    elif query.data.startswith("city_"):
+
+        city = query.data.replace(
+            "city_",
+            ""
+        )
+
+        print("ГОРОД:", city)
+
+    else:
+
+        return
+
+
+    # первый выбор города - создание профиля
+
+    if context.user_data.get("profile_city"):
+
+        print("СОХРАНЯЕМ ПРОФИЛЬ")
+
+        save_user_city(
+            query.from_user.id,
+            city
+        )
+
+        context.user_data["profile_city"] = False
+
+
+        await query.edit_message_text(
+            f"✅ Профиль создан\n\n"
+            f"📍 Ваш город: {city}\n\n"
+            "Теперь выберите действие:",
+            reply_markup=power_keyboard()
+        )
+
+        return
+
+
+    # обычная запись отключения
+
     status = context.user_data.get("status")
 
     print("СТАТУС:", status)
@@ -144,14 +185,19 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if status is None:
 
         await query.edit_message_text(
-            "Ошибка. Нажмите /start"
+            "Сначала выберите:\n\n"
+            "🔴 Нет света\n"
+            "🟢 Свет есть"
         )
 
         return
 
 
+    user_id = query.from_user.id
+
+
     save_report(
-        query.from_user.id,
+        user_id,
         city,
         status
     )
@@ -166,132 +212,40 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
     count = get_city_stats(city)
 
 
-    await query.edit_message_text(
-        f"🔴 Записано\n\n"
-        f"📍 {city}\n"
-        f"Нет света\n\n"
-        f"Подтвердили: {count}"
-    )
+    print("СЧЁТЧИК:", count)
+    print("ЛИМИТ:", ALERT_THRESHOLD)
+
+
+    if status == "no_power" and count >= ALERT_THRESHOLD:
+
+        await publish(
+            context.application,
+            city,
+            count
+        )
+
+
+    if status == "no_power":
+
+        text = (
+            f"🔴 Записано\n\n"
+            f"📍 {city}\n"
+            f"Нет света\n\n"
+            f"Подтвердили: {count}"
+        )
+
+    else:
+
+        text = (
+            f"🟢 Записано\n\n"
+            f"📍 {city}\n"
+            f"Свет есть"
+        )
+
+
+    await query.edit_message_text(text)
 
     return
-
-
-        if query.data.startswith("city_"):
-
-        city = query.data.replace(
-            "city_",
-            ""
-        )
-
-        print("ГОРОД:", city)
-
-
-        # если пользователь создаёт профиль
-
-        if context.user_data.get("profile_city"):
-
-            print("СОХРАНЯЕМ ПРОФИЛЬ")
-
-            save_user_city(
-                query.from_user.id,
-                city
-            )
-
-            context.user_data["profile_city"] = False
-
-
-            await query.edit_message_text(
-                f"✅ Профиль создан\n\n"
-                f"📍 Ваш город: {city}\n\n"
-                "Теперь выберите действие:",
-                reply_markup=power_keyboard()
-            )
-
-            return
-
-
-        status = context.user_data.get("status")
-
-        print("СТАТУС:", status)
-
-
-        if status is None:
-
-            await query.edit_message_text(
-                "Сначала выберите действие:\n\n"
-                "🔴 Нет света\n"
-                "🟢 Свет есть"
-            )
-
-            return
-
-
-    # дальше идёт старая логика сообщений
-
-    status = context.user_data.get("status")
-
-    print("СТАТУС:", status)
-
-
-    if status is None:
-
-        await query.edit_message_text(
-            "Ошибка. Нажмите /start"
-        )
-
-        return
-
-        user_id = query.from_user.id
-
-
-        save_report(
-            user_id,
-            city,
-            status
-        )
-
-
-        set_city_status(
-            city,
-            status
-        )
-
-
-        count = get_city_stats(city)
-
-        print("СЧЁТЧИК:", count)
-        print("ЛИМИТ:", ALERT_THRESHOLD)
-
-        if status == "no_power" and count >= ALERT_THRESHOLD:
-
-            await publish(
-                context.application,
-                city,
-                count
-            )
-    
-        if status == "no_power":
-
-            text = (
-                f"🔴 Записано\n\n"
-                f"📍 {city}\n"
-                f"Нет света\n\n"
-                f"Подтвердили: {count}"
-            )
-
-
-        else:
-
-            text = (
-                f"🟢 Записано\n\n"
-                f"📍 {city}\n"
-                f"Свет есть"
-            )
-
-
-        await query.edit_message_text(text)
-
-        return
 
 async def message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
