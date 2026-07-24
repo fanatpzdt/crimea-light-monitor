@@ -77,29 +77,25 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # пользователь выбрал город
     if query.data.startswith("city_"):
 
-    print("ГОРОД НАЖАТ:", query.data)
+        print("ГОРОД НАЖАТ:", query.data)
 
-    city = query.data.replace(
-        "city_",
-        ""
-    )
-
-    print("ГОРОД:", city)
+        city = query.data.replace(
+            "city_",
+            ""
+        )
 
         status = context.user_data.get("status")
 
+        print("СТАТУС:", status)
+        print("ГОРОД:", city)
 
         if not status:
-
             await query.edit_message_text(
-                "Ошибка. Сначала выберите состояние света."
+                "Ошибка: сначала выберите состояние света"
             )
-
             return
 
-
         user_id = query.from_user.id
-
 
         save_report(
             user_id,
@@ -107,57 +103,19 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
             status
         )
 
-
         set_city_status(
             city,
             status
         )
 
+        count = get_city_stats(city)
 
-        if status == "no_power":
-
-            set_power_start(city)
-
-
-            count = get_city_stats(city)
-
-
-            if count >= ALERT_THRESHOLD:
-
-                await publish(
-                    context.application,
-                    city,
-                    count
-                )
-
-
-            answer = (
-                f"🔴 Записал\n\n"
-                f"📍 {city}\n"
-                f"Нет света\n\n"
-                f"Подтвердили: {count} человек"
-            )
-
-
-        else:
-
-
-            ok_count = get_power_ok_count(city)
-
-
-            await publish_restore(
-                context.application,
-                city,
-                ok_count
-            )
-
-
-            answer = (
-                f"🟢 Записал\n\n"
-                f"📍 {city}\n"
-                f"Свет есть"
-            )
-
+        answer = (
+            f"Записал\n\n"
+            f"Город: {city}\n"
+            f"Статус: {status}\n"
+            f"Подтвердили: {count}"
+        )
 
         await query.edit_message_text(
             answer
