@@ -1,26 +1,34 @@
 import os
-from channel import publish, publish_restore
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Application, CommandHandler, MessageHandler, CallbackQueryHandler, filters, ContextTypes
+
+from telegram import Update
+from telegram.ext import (
+    Application,
+    CommandHandler,
+    MessageHandler,
+    CallbackQueryHandler,
+    ContextTypes,
+    filters
+)
+
 from database import (
     create_table,
     create_reports_table,
     create_alerts_table,
-create_city_status_table,
+    create_city_status_table,
     save_report,
     get_city_stats,
     get_power_ok_count,
     set_city_status,
-    get_city_status,
     set_power_start,
-    get_power_start
+    save_message,
+    connect
 )
 
-from database import connect
-from parser import parse_message
 from keyboards import power_keyboard, cities_keyboard
-from channel import publish
+from channel import publish, publish_restore
+from parser import parse_message
 from config import ALERT_THRESHOLD
+
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
@@ -29,7 +37,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "Что сейчас происходит?",
         reply_markup=power_keyboard()
     )
-    
+
+
 async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     query = update.callback_query
@@ -39,45 +48,55 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.answer()
 
 
+    # пользователь нажал "Нет света"
     if query.data == "no_power":
 
         context.user_data["status"] = "no_power"
 
         await query.edit_message_text(
             "Выберите город:",
-            reply_markup=city_keyboard()
+            reply_markup=cities_keyboard()
         )
 
         return
 
 
+    # пользователь нажал "Свет есть"
     if query.data == "power_ok":
 
         context.user_data["status"] = "power_ok"
 
         await query.edit_message_text(
             "Выберите город:",
-            reply_markup=city_keyboard()
+            reply_markup=cities_keyboard()
         )
 
         return
 
 
+    # пользователь выбрал город
     if query.data.startswith("city_"):
+
         city = query.data.replace(
             "city_",
             ""
         )
 
+
         status = context.user_data.get("status")
 
+
         if not status:
+
             await query.edit_message_text(
-                "Ошибка: сначала выберите состояние света"
+                "Ошибка. Сначала выберите состояние света."
             )
+
             return
 
+
         user_id = query.from_user.id
+
 
         save_report(
             user_id,
@@ -85,18 +104,20 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
             status
         )
 
+
         set_city_status(
             city,
             status
         )
 
+
         if status == "no_power":
+
             set_power_start(city)
 
-        count = get_city_stats(city)
 
+            count = get_city_stats(city)
 
-        if status == "no_power":
 
             if count >= ALERT_THRESHOLD:
 
@@ -106,6 +127,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     count
                 )
 
+
             answer = (
                 f"🔴 Записал\n\n"
                 f"📍 {city}\n"
@@ -114,15 +136,18 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
 
 
-        elif status == "power_ok":
+        else:
+
 
             ok_count = get_power_ok_count(city)
+
 
             await publish_restore(
                 context.application,
                 city,
                 ok_count
             )
+
 
             answer = (
                 f"🟢 Записал\n\n"
@@ -134,7 +159,9 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await query.edit_message_text(
             answer
         )
-        
+
+
+
 async def message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     text = update.message.text
@@ -156,16 +183,20 @@ async def message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         problem=data["problem"],
         duration=data["duration"]
     )
+
+
+
 async def stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     conn = connect()
+
     cursor = conn.cursor()
 
 
     cursor.execute("""
     SELECT city, COUNT(*)
     FROM messages
-    WHERE created_at >= datetime('now', '-24 hours')
+    WHERE created_at >= datetime('now','-24 hours')
     AND city IS NOT NULL
     GROUP BY city
     ORDER BY COUNT(*) DESC
@@ -174,118 +205,81 @@ async def stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     rows = cursor.fetchall()
 
+
     conn.close()
 
 
     if not rows:
+
         await update.message.reply_text(
-            "За последние 24 часа сообщений нет"
+            "Сообщений нет"
         )
+
         return
 
 
-    text = "⚡ Crimea Light Monitor\n\n"
-    text += "За последние 24 часа:\n\n"
+    text = "⚡ Статистика:\n\n"
 
 
     for city, count in rows:
-        text += f"🏙 {city}: {count} сообщений\n"
+
+        text += f"{city}: {count}\n"
 
 
     await update.message.reply_text(text)
 
+
+
 def main():
+
     create_table()
     create_reports_table()
     create_alerts_table()
     create_city_status_table()
+
+
     token = os.getenv("BOT_TOKEN")
 
+
     app = Application.builder().token(token).build()
-    app.add_handler(
-    CallbackQueryHandler(button)
-    )
-    app.add_handler(CommandHandler("start", start))
 
-    app.add_handler(CommandHandler("stats", stats))
 
     app.add_handler(
-    MessageHandler(
-        filters.TEXT & ~filters.COMMAND,
-        message
+        CommandHandler(
+            "start",
+            start
+        )
     )
+
+
+    app.add_handler(
+        CallbackQueryHandler(button)
     )
+
+
+    app.add_handler(
+        CommandHandler(
+            "stats",
+            stats
+        )
+    )
+
+
+    app.add_handler(
+        MessageHandler(
+            filters.TEXT & ~filters.COMMAND,
+            message
+        )
+    )
+
 
     print("Бот запущен")
+
 
     app.run_polling()
 
 
+
 if __name__ == "__main__":
+
     main()
-    
-async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
-
-    query = update.callback_query
-
-    await query.answer()
-
-
-    if query.data == "no_power":
-
-        context.user_data["status"] = "no_power"
-
-        await query.edit_message_text(
-            "Выберите город:",
-            reply_markup=cities_keyboard()
-        )
-def city_keyboard():
-
-    cities = [
-
-        "Симферополь",
-
-        "Ялта",
-
-        "Керчь",
-
-        "Севастополь",
-
-        "Евпатория",
-
-        "Феодосия",
-
-        "Джанкой"
-
-    ]
-
-    buttons = []
-
-    for city in cities:
-
-        buttons.append(
-
-            [
-
-                InlineKeyboardButton(
-
-                    city,
-
-                    callback_data=f"city_{city}"
-
-                )
-
-            ]
-
-        )
-
-    return InlineKeyboardMarkup(buttons)
-
-    elif query.data == "power_ok":
-
-        context.user_data["status"] = "power_ok"
-
-        await query.edit_message_text(
-            "Выберите город:",
-            reply_markup=cities_keyboard()
-        )
