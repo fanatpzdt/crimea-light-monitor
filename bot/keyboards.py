@@ -1,5 +1,7 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
+from cities import POPULAR_CITIES
+
 
 def power_keyboard():
 
@@ -24,58 +26,29 @@ def power_keyboard():
 
 def cities_keyboard():
 
-    cities = [
-    "Симферополь",
-    "Севастополь",
-    "Ялта",
-    "Алушта",
-    "Керчь",
-    "Феодосия",
-    "Евпатория",
-    "Джанкой",
-    "Армянск",
-    "Красноперекопск",
-    "Бахчисарай",
-    "Белогорск",
-    "Саки",
-    "Судак",
-    "Старый Крым",
-    "Щёлкино",
-    "Инкерман",
-    "Гурзуф",
-    "Массандра",
-    "Ливадия",
-    "Гаспра",
-    "Кореиз",
-    "Форос",
-    "Коктебель",
-    "Орджоникидзе",
-    "Черноморское",
-    "Раздольное",
-    "Первомайское",
-    "Красногвардейское",
-    "Нижнегорский",
-    "Советский",
-    "Кировское",
-    "Ленино",
-    "Приморский",
-    "Мирный",
-    "Николаевка",
-    "Новофёдоровка"
-]
-
-
     keyboard = []
 
-    for city in cities:
+
+    for city in POPULAR_CITIES:
+
         keyboard.append(
             [
                 InlineKeyboardButton(
-                    city,
+                    f"🏙 {city}",
                     callback_data=f"city_{city}"
                 )
             ]
         )
+
+
+    keyboard.append(
+        [
+            InlineKeyboardButton(
+                "🔍 Найти другой населённый пункт",
+                callback_data="search_city"
+            )
+        ]
+    )
 
 
     return InlineKeyboardMarkup(keyboard)
