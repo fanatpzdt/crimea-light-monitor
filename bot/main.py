@@ -108,8 +108,6 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     print("ПОИСК ВЫБРАЛ ГОРОД:", city)
 
-        query.data = "city_" + city
-
 
 # обработка выбора города
     if query.data.startswith("city_"):
