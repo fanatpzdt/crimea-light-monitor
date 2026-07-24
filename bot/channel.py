@@ -8,12 +8,16 @@ async def publish(application, city, count):
 
 
     text = (
-    "⚡ <b>Сообщение о перебое электроснабжения</b>\n\n"
-    f"📍 Населённый пункт: <b>{city}</b>\n"
-    "🔴 Статус: отсутствует электроснабжение\n\n"
-    f"👥 Подтвердили пользователи: <b>{count}</b>\n\n"
-    "ℹ️ Информация получена от жителей через Crimea Light Monitor.\n"
-    "Следим за развитием ситуации."
+
+        "⚡ <b>Сообщение о перебое электроснабжения</b>\n\n"
+
+        f"📍 Населённый пункт: <b>{city}</b>\n"
+
+        "🔴 Статус: отсутствует электроснабжение\n\n"
+
+        f"👥 Подтвердили пользователи: <b>{count}</b>\n\n"
+
+        "ℹ️ Информация получена от жителей через Crimea Light Monitor."
     )
 
 
@@ -21,8 +25,11 @@ async def publish(application, city, count):
 
 
     await application.bot.send_message(
+
         chat_id=CHANNEL_ID,
+
         text=text,
+
         parse_mode="HTML"
     )
 
