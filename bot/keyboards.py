@@ -52,3 +52,29 @@ def cities_keyboard():
 
 
     return InlineKeyboardMarkup(keyboard)
+
+def search_result_keyboard(results):
+
+    keyboard = []
+
+    for city in results:
+
+        keyboard.append(
+            [
+                InlineKeyboardButton(
+                    f"📍 {city}",
+                    callback_data=f"found_{city}"
+                )
+            ]
+        )
+
+    keyboard.append(
+        [
+            InlineKeyboardButton(
+                "⬅️ Назад",
+                callback_data="back_city"
+            )
+        ]
+    )
+
+    return InlineKeyboardMarkup(keyboard)
