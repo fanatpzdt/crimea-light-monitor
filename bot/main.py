@@ -85,17 +85,16 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         return
 
+        if query.data.startswith("found_"):
 
-    if query.data.startswith("found_"):
-
-       city = query.data.replace(
-        "found_",
-        ""
+        city = query.data.replace(
+            "found_",
+            ""
         )
 
-    print("ПОИСК ВЫБРАЛ ГОРОД:", city)
+        print("ПОИСК ВЫБРАЛ ГОРОД:", city)
 
-       query.data = f"city_{city}"
+        query.data = "city_" + city
 
 
 # обработка выбора города
