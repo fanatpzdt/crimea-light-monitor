@@ -157,6 +157,27 @@ async def message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     text = update.message.text
     user_id = update.message.from_user.id
+    if context.user_data.get("search_mode"):
+
+    results = search_city(text)
+
+    if results:
+
+        await update.message.reply_text(
+            "Нашёл:\n\n" +
+            "\n".join(
+                f"📍 {city}" for city in results
+            )
+        )
+
+    else:
+
+        await update.message.reply_text(
+            "Город не найден"
+        )
+
+    return
+    
     results = search_city(text)
 
     if results:
