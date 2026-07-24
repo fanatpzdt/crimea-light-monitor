@@ -22,6 +22,7 @@ from database import (
     create_reports_table,
     create_alerts_table,
     create_city_status_table,
+    create_power_events_table,
     save_report,
     save_message,
     get_city_stats,
