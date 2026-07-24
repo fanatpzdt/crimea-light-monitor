@@ -63,7 +63,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "Что сейчас происходит?",
         reply_markup=power_keyboard()
     )
-        return
+    return
 
 
     await update.message.reply_text(
