@@ -63,6 +63,15 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "Что сейчас происходит?",
         reply_markup=power_keyboard()
     )
+        return
+
+
+    await update.message.reply_text(
+        f"⚡ Crimea Light Monitor\n\n"
+        f"📍 Ваш город: {city}\n\n"
+        "Что сейчас происходит?",
+        reply_markup=power_keyboard()
+    )
     return
 
 
