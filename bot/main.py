@@ -86,30 +86,16 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
 
-    if query.data.startswith("city_"):
+    if query.data.startswith("found_"):
 
-        city = query.data.replace(
-            "city_",
-            ""
-        )
+    city = query.data.replace(
+        "found_",
+        ""
+    )
 
-        print("ГОРОД:", city)
+    print("ПОИСК ВЫБРАЛ ГОРОД:", city)
 
-        status = context.user_data.get("status")
-
-        print("СТАТУС:", status)
-
-        if status is None:
-
-            await query.edit_message_text(
-                "Ошибка. Нажмите /start"
-            )
-
-            return
-
-        await query.edit_message_text(
-            f"Вы выбрали: {city}"
-        )
+    query.data = f"city_{city}"
 
 async def message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
