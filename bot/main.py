@@ -113,28 +113,48 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     elif query.data.startswith("city_"):
 
-        city = query.data.replace(
-            "city_",
-            ""
+    city = query.data.replace(
+        "city_",
+        ""
+    )
+
+    print("ГОРОД:", city)
+
+
+    # если человек выбирает город для профиля
+    if context.user_data.get("select_city"):
+
+        save_user_city(
+            query.from_user.id,
+            city
         )
 
+        context.user_data["select_city"] = False
 
-    if city:
 
-        print("ГОРОД:", city)
+        await query.edit_message_text(
+            f"✅ Город сохранён\n\n"
+            f"📍 {city}\n\n"
+            "Теперь уведомления будут приходить автоматически."
+        )
 
-        status = context.user_data.get("status")
+        return
 
-        print("СТАТУС:", status)
 
-        if status is None:
+    # дальше идёт старая логика сообщений
 
-            await query.edit_message_text(
-                "Ошибка. Нажмите /start"
-            )
+    status = context.user_data.get("status")
 
-            return
+    print("СТАТУС:", status)
 
+
+    if status is None:
+
+        await query.edit_message_text(
+            "Ошибка. Нажмите /start"
+        )
+
+        return
 
         user_id = query.from_user.id
 
