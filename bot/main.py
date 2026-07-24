@@ -49,7 +49,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.answer()
 
     print("НАЖАТА КНОПКА:", query.data)
-
+    city = None
 
     if query.data == "search_city":
 
