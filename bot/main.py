@@ -38,8 +38,28 @@ from database import (
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    user_id = update.message.from_user.id
+
+    city = get_user_city(user_id)
+
+
+    if city is None:
+
+        context.user_data["select_city"] = True
+
+        await update.message.reply_text(
+            "⚡ Crimea Light Monitor\n\n"
+            "Выберите ваш населённый пункт:",
+            reply_markup=cities_keyboard()
+        )
+
+        return
+
+
     await update.message.reply_text(
-        "⚡ Crimea Light Monitor\n\n"
+        f"⚡ Crimea Light Monitor\n\n"
+        f"📍 Ваш город: {city}\n\n"
         "Что сейчас происходит?",
         reply_markup=power_keyboard()
     )
