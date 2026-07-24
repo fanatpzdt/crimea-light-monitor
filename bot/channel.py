@@ -6,43 +6,30 @@ async def publish(application, city, count):
 
     message_id = get_alert(city)
 
-
     text = (
-
         "⚡ <b>Сообщение о перебое электроснабжения</b>\n\n"
-
         f"📍 Населённый пункт: <b>{city}</b>\n"
-
         "🔴 Статус: отсутствует электроснабжение\n\n"
-
         f"👥 Подтвердили пользователи: <b>{count}</b>\n\n"
-
         "ℹ️ Информация получена от жителей через Crimea Light Monitor."
     )
 
-
     if message_id:
 
-
-    await application.bot.send_message(
-
-        chat_id=CHANNEL_ID,
-
-        text=text,
-
-        parse_mode="HTML"
-    )
-
+        await application.bot.edit_message_text(
+            chat_id=CHANNEL_ID,
+            message_id=message_id,
+            text=text,
+            parse_mode="HTML"
+        )
 
     else:
-
 
         message = await application.bot.send_message(
             chat_id=CHANNEL_ID,
             text=text,
             parse_mode="HTML"
         )
-
 
         save_alert(
             city,
