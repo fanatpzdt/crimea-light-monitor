@@ -63,15 +63,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     # Свет есть
     if query.data == "power_ok":
-    if query.data == "search_city":
 
-        context.user_data["search_city"] = True
-
-       await query.edit_message_text(
-        "Введите первые буквы города:"
-        )
-
-        return
         context.user_data["status"] = "power_ok"
 
         await query.edit_message_text(
