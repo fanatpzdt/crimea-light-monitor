@@ -193,7 +193,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if query.data.startswith("city_"):
 
-        city = query.data.replace(
+    city = query.data.replace(
         "city_",
         ""
     )
@@ -201,7 +201,11 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
     print("ГОРОД:", city)
 
 
+    # СОХРАНЕНИЕ ПРОФИЛЯ
+
     if context.user_data.get("profile_city"):
+
+        print("СОХРАНЯЕМ ПРОФИЛЬ")
 
         save_user_city(
             query.from_user.id,
@@ -219,6 +223,13 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
 
         return
+
+
+    # СТАРАЯ ЛОГИКА ОТКЛЮЧЕНИЙ
+
+    status = context.user_data.get("status")
+
+    print("СТАТУС:", status)
         
     print("ГОРОД:", city)
 
