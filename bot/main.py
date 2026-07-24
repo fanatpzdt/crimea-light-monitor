@@ -149,7 +149,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
 
 
-                count = get_city_stats(city)
+        count = get_city_stats(ci
 
         print("СЧЁТЧИК:", count)
         print("ЛИМИТ:", ALERT_THRESHOLD)
