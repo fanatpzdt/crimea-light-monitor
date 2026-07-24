@@ -1,6 +1,7 @@
 import os
 
-from telegram import Update
+from search import search_city
+from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import (
     Application,
     CommandHandler,
@@ -61,7 +62,15 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     # Свет есть
     if query.data == "power_ok":
+    if query.data == "search_city":
 
+        context.user_data["search_city"] = True
+
+       await query.edit_message_text(
+        "Введите первые буквы города:"
+        )
+
+        return
         context.user_data["status"] = "power_ok"
 
         await query.edit_message_text(
@@ -145,7 +154,47 @@ async def message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     text = update.message.text
     user_id = update.message.from_user.id
+async def message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
+    text = update.message.text
+
+
+    if context.user_data.get("search_city"):
+
+        results = search_city(text)
+
+        context.user_data["search_city"] = False
+
+
+        if not results:
+
+            await update.message.reply_text(
+                "Не нашёл город. Попробуйте ещё раз."
+            )
+
+            return
+
+
+        keyboard = []
+
+        for city in results:
+
+            keyboard.append(
+                [
+                    InlineKeyboardButton(
+                        city,
+                        callback_data=f"city_{city}"
+                    )
+                ]
+            )
+
+
+        await update.message.reply_text(
+            "Выберите город:",
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
+
+        return
     data = parse_message(text)
 
     save_message(
