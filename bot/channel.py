@@ -17,6 +17,7 @@ async def publish(application, city, count):
 
     if message_id:
 
+
         await application.bot.edit_message_text(
             chat_id=CHANNEL_ID,
             message_id=message_id,
@@ -27,26 +28,31 @@ async def publish(application, city, count):
 
     else:
 
-        
+
         message = await application.bot.send_message(
             chat_id=CHANNEL_ID,
             text=text,
             parse_mode="HTML"
         )
 
+
         save_alert(
             city,
             message.message_id
         )
+
+
+
 async def publish_restore(application, city, count):
 
-    from database import get_alert
 
     message_id = get_alert(city)
 
 
     if not message_id:
+
         return
+
 
 
     text = (
