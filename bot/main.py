@@ -46,7 +46,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if city is None:
 
-        context.user_data["select_city"] = True
+        context.user_data["profile_city"] = True
 
         await update.message.reply_text(
             "⚡ Crimea Light Monitor\n\n"
@@ -54,6 +54,15 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
             reply_markup=cities_keyboard()
         )
 
+        return
+
+
+    await update.message.reply_text(
+        f"⚡ Crimea Light Monitor\n\n"
+        f"📍 Ваш город: {city}\n\n"
+        "Что сейчас происходит?",
+        reply_markup=power_keyboard()
+    )
         return
 
 
@@ -175,11 +184,35 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if query.data.startswith("city_"):
 
-        city = query.data.replace(
+    city = query.data.replace(
         "city_",
         ""
+    )
+
+    print("ГОРОД:", city)
+
+
+    # первый выбор города для профиля
+
+    if context.user_data.get("profile_city"):
+
+        save_user_city(
+            query.from_user.id,
+            city
         )
 
+        context.user_data["profile_city"] = False
+
+
+        await query.edit_message_text(
+            f"✅ Профиль создан\n\n"
+            f"📍 Ваш город: {city}\n\n"
+            "Теперь выберите действие:",
+            reply_markup=power_keyboard()
+        )
+
+        return
+        
     print("ГОРОД:", city)
 
 
