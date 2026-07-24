@@ -38,6 +38,8 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await query.answer()
 
+    print("ВСЕ ДАННЫЕ КНОПКИ:", query.data)
+    
     if query.data.startswith("city_"):
 
         city = query.data.replace(
