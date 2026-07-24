@@ -152,45 +152,33 @@ async def message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     text = update.message.text
+    user_id = update.message.from_user.id
 
 
-    if context.user_data.get("search_city"):
+    if context.user_data.get("search_mode"):
 
         results = search_city(text)
 
-        context.user_data["search_city"] = False
-
-
-        if not results:
+        if results:
 
             await update.message.reply_text(
-                "Не нашёл город. Попробуйте ещё раз."
+                "Нашёл города:\n\n" +
+                "\n".join(
+                    f"📍 {city}" for city in results
+                )
             )
 
-            return
+        else:
 
-
-        keyboard = []
-
-        for city in results:
-
-            keyboard.append(
-                [
-                    InlineKeyboardButton(
-                        city,
-                        callback_data=f"city_{city}"
-                    )
-                ]
+            await update.message.reply_text(
+                "Город не найден"
             )
-
-
-        await update.message.reply_text(
-            "Выберите город:",
-            reply_markup=InlineKeyboardMarkup(keyboard)
-        )
 
         return
+
+
     data = parse_message(text)
+
 
     save_message(
         user_id=user_id,
@@ -201,10 +189,10 @@ async def message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         duration=data["duration"],
     )
 
+
     await update.message.reply_text(
         "Спасибо, сообщение сохранено."
     )
-
 
 async def stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
