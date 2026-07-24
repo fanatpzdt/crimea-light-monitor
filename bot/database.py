@@ -344,3 +344,102 @@ def get_power_start(city):
         return row[0]
 
     return None
+def create_users_table():
+
+    conn = connect()
+
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+            telegram_id INTEGER UNIQUE,
+
+            city TEXT,
+
+            notifications INTEGER DEFAULT 1
+
+        )
+    """)
+
+    conn.commit()
+    conn.close()
+
+def save_user_city(telegram_id, city):
+
+    conn = connect()
+
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        INSERT INTO users (telegram_id, city)
+        VALUES (?, ?)
+
+        ON CONFLICT(telegram_id)
+        DO UPDATE SET city=excluded.city
+        """,
+        (
+            telegram_id,
+            city
+        )
+    )
+
+    conn.commit()
+    conn.close()
+
+
+
+def get_user_city(telegram_id):
+
+    conn = connect()
+
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        SELECT city
+        FROM users
+        WHERE telegram_id=?
+        """,
+        (telegram_id,)
+    )
+
+    result = cursor.fetchone()
+
+    conn.close()
+
+
+    if result:
+        return result[0]
+
+    return None
+
+
+
+def get_city_users(city):
+
+    conn = connect()
+
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        SELECT telegram_id
+        FROM users
+        WHERE city=?
+        AND notifications=1
+        """,
+        (city,)
+    )
+
+    users = cursor.fetchall()
+
+    conn.close()
+
+    return [
+        user[0]
+        for user in users
+    ]
