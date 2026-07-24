@@ -3,74 +3,54 @@ import re
 
 CITIES = [
     "Симферополь",
+    "Севастополь",
     "Ялта",
     "Керчь",
-    "Севастополь",
     "Евпатория",
     "Феодосия",
-    "Бахчисарай",
     "Джанкой"
 ]
 
 
 PROBLEMS = {
-    "свет": "отключение света",
-    "электр": "отключение света",
-    "вод": "отключение воды",
-    "газ": "проблемы с газом",
-    "тепл": "нет отопления"
+    "нет света": "Нет света",
+    "отключили": "Нет света",
+    "вырубили": "Нет света",
+    "электричества нет": "Нет света",
+    "свет моргает": "Мигает свет",
+    "скачет напряжение": "Напряжение",
+    "низкое напряжение": "Напряжение"
 }
 
 
 def parse_message(text):
 
-    result = {
-        "city": None,
-        "district": None,
-        "problem": None,
-        "duration": None
-    }
-
-
     text_lower = text.lower()
 
+    city = None
 
-    # город
-    for city in CITIES:
-        if city.lower() in text_lower:
-            result["city"] = city
+    for c in CITIES:
+        if c.lower() in text_lower:
+            city = c
             break
 
+    problem = None
 
-    # проблема
-    for word, problem in PROBLEMS.items():
-        if word in text_lower:
-            result["problem"] = problem
+    for key, value in PROBLEMS.items():
+        if key in text_lower:
+            problem = value
             break
 
+    duration = None
 
-    # длительность
-    duration = re.search(
-        r"(\d+\s*(час|часа|часов|минут|минуты))",
-        text_lower
-    )
+    m = re.search(r"(\d+)\s*(мин|час)", text_lower)
 
-    if duration:
-        result["duration"] = duration.group(1)
+    if m:
+        duration = m.group(0)
 
-
-    # район
-    districts = [
-        "центр",
-        "автовокзал",
-        "старый город",
-        "новый город"
-    ]
-
-    for district in districts:
-        if district in text_lower:
-            result["district"] = district.title()
-            break
-
-
-    return result
+    return {
+        "city": city,
+        "district": None,
+        "problem": problem,
+        "duration": duration
+    }
