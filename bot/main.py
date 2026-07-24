@@ -103,12 +103,52 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if query.data.startswith("found_"):
 
-        city = query.data.replace(
-            "found_",
-            ""
+       city = query.data.replace(
+        "found_",
+        ""
+    )
+
+    print("ПОИСК ВЫБРАЛ ГОРОД:", city)
+
+
+    status = context.user_data.get("status")
+
+    print("СТАТУС:", status)
+
+
+    if status is None:
+
+        await query.edit_message_text(
+            "Ошибка. Нажмите /start"
         )
 
-        print("ПОИСК ВЫБРАЛ ГОРОД:", city)
+        return
+
+
+    save_report(
+        query.from_user.id,
+        city,
+        status
+    )
+
+
+    set_city_status(
+        city,
+        status
+    )
+
+
+    count = get_city_stats(city)
+
+
+    await query.edit_message_text(
+        f"🔴 Записано\n\n"
+        f"📍 {city}\n"
+        f"Нет света\n\n"
+        f"Подтвердили: {count}"
+    )
+
+    return
 
 
     elif query.data.startswith("city_"):
