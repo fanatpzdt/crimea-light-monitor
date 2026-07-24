@@ -76,7 +76,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     # пользователь выбрал город
     if query.data.startswith("city_"):
-
+    print("ГОРОД НАТЖАТ:", query.data)
         city = query.data.replace(
             "city_",
             ""
