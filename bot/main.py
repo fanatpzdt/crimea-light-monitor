@@ -1,6 +1,6 @@
 import os
 from channel import publish, publish_restore
-from telegram import Update
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, MessageHandler, CallbackQueryHandler, filters, ContextTypes
 from database import (
     create_table,
@@ -38,10 +38,32 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await query.answer()
 
-    print("ВСЕ ДАННЫЕ КНОПКИ:", query.data)
-    
-    if query.data.startswith("city_"):
 
+    if query.data == "no_power":
+
+        context.user_data["status"] = "no_power"
+
+        await query.edit_message_text(
+            "Выберите город:",
+            reply_markup=city_keyboard()
+        )
+
+        return
+
+
+    if query.data == "power_ok":
+
+        context.user_data["status"] = "power_ok"
+
+        await query.edit_message_text(
+            "Выберите город:",
+            reply_markup=city_keyboard()
+        )
+
+        return
+
+
+    if query.data.startswith("city_"):
         city = query.data.replace(
             "city_",
             ""
@@ -201,6 +223,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+    
 async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     query = update.callback_query
@@ -216,7 +239,47 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "Выберите город:",
             reply_markup=cities_keyboard()
         )
+def city_keyboard():
 
+    cities = [
+
+        "Симферополь",
+
+        "Ялта",
+
+        "Керчь",
+
+        "Севастополь",
+
+        "Евпатория",
+
+        "Феодосия",
+
+        "Джанкой"
+
+    ]
+
+    buttons = []
+
+    for city in cities:
+
+        buttons.append(
+
+            [
+
+                InlineKeyboardButton(
+
+                    city,
+
+                    callback_data=f"city_{city}"
+
+                )
+
+            ]
+
+        )
+
+    return InlineKeyboardMarkup(buttons)
 
     elif query.data == "power_ok":
 
