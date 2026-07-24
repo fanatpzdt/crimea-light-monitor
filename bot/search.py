@@ -1,15 +1,16 @@
-from cities.py import cities
+from cities import ALL_CITIES
 
 
 def search_city(text):
 
     text = text.lower().strip()
 
-    result = []
+    results = []
 
-    for city in cities:
+    for city in ALL_CITIES:
 
-        if city.lower().startswith(text):
-            result.append(city)
+        if text in city.lower():
 
-    return result[:10]
+            results.append(city)
+
+    return results[:5]
