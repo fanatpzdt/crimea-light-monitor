@@ -20,12 +20,11 @@ async def publish(application, city, count):
     if message_id:
 
 
-        await application.bot.edit_message_text(
-            chat_id=CHANNEL_ID,
-            message_id=message_id,
-            text=text,
-            parse_mode="HTML"
-        )
+    await application.bot.send_message(
+        chat_id=CHANNEL_ID,
+        text=text,
+        parse_mode="HTML"
+    )
 
 
     else:
