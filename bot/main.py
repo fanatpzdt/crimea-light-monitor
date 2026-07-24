@@ -110,7 +110,8 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     print("ПОИСК ВЫБРАЛ ГОРОД:", city)
 
-         return
+         
+        return
     
     status = context.user_data.get("status")
 
