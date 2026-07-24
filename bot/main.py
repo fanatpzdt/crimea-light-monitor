@@ -13,7 +13,7 @@ from telegram.ext import (
 )
 
 from config import ALERT_THRESHOLD
-from keyboards import power_keyboard, cities_keyboard
+from keyboards import power_keyboard, cities_keyboard, search_result_keyboard
 from parser import parse_message
 
 from channel import publish, publish_restore
@@ -170,76 +170,29 @@ async def message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     text = update.message.text
     user_id = update.message.from_user.id
-    if context.user_data.get("search_mode"):
-
-        results = search_city(text)
-
-        if results:
-
-            keyboard = []
-
-            for city in results:
-                keyboard.append(
-                    [
-                        InlineKeyboardButton(
-                            city,
-                            callback_data=f"city_{city}"
-                        )
-                    ]
-                )
-
-            await update.message.reply_text(
-                "Нашёл города:",
-                reply_markup=InlineKeyboardMarkup(keyboard)
-            )
-
-        else:
-
-            await update.message.reply_text(
-                "Город не найден. Попробуйте ещё раз."
-            )
-
-        return
-        
-    if context.user_data.get("search_mode"):
+    
+        if context.user_data.get("search_mode"):
 
         results = search_city(text)
 
         if results:
 
             await update.message.reply_text(
-                "Нашёл города:\n\n" +
-                "\n".join(
-                    f"📍 {city}" for city in results
-                )
+                "🔎 Результаты поиска:\n\n"
+                "Выберите населённый пункт:",
+                reply_markup=search_result_keyboard(results)
             )
 
         else:
 
             await update.message.reply_text(
-                "Город не найден"
+                "❌ Город не найден.\n\n"
+                "Попробуйте ввести первые буквы ещё раз."
             )
 
         context.user_data["search_mode"] = False
 
         return
-
-
-    data = parse_message(text)
-
-    save_message(
-        user_id=user_id,
-        text=text,
-        city=data["city"],
-        district=data["district"],
-        problem=data["problem"],
-        duration=data["duration"],
-    )
-
-
-    await update.message.reply_text(
-        "Спасибо, сообщение сохранено."
-    )
 
 async def stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
