@@ -51,7 +51,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
             return
 
-                user_id = query.from_user.id
+        user_id = query.from_user.id
 
         save_report(
             user_id,
@@ -68,6 +68,46 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
             set_power_start(city)
 
         count = get_city_stats(city)
+
+
+        if status == "no_power":
+
+            if count >= ALERT_THRESHOLD:
+
+                await publish(
+                    context.application,
+                    city,
+                    count
+                )
+
+            answer = (
+                f"🔴 Записал\n\n"
+                f"📍 {city}\n"
+                f"Нет света\n\n"
+                f"Подтвердили: {count} человек"
+            )
+
+
+        elif status == "power_ok":
+
+            ok_count = get_power_ok_count(city)
+
+            await publish_restore(
+                context.application,
+                city,
+                ok_count
+            )
+
+            answer = (
+                f"🟢 Записал\n\n"
+                f"📍 {city}\n"
+                f"Свет есть"
+            )
+
+
+        await query.edit_message_text(
+            answer
+        )
         
 async def message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
