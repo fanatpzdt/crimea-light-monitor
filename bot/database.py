@@ -294,7 +294,7 @@ def create_power_events_table():
     cursor = conn.cursor()
 
     cursor.execute("""
-    CREATE TABLE IF NOT EXISTS power_events(
+    CREATE TABLE IF NOT EXISTS power_events (
         city TEXT PRIMARY KEY,
         started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
@@ -302,7 +302,6 @@ def create_power_events_table():
 
     conn.commit()
     conn.close()
-
 
 def set_power_start(city):
 
