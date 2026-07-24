@@ -115,7 +115,37 @@ async def message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     text = update.message.text
     user_id = update.message.from_user.id
+    if context.user_data.get("search_mode"):
 
+        results = search_city(text)
+
+        if results:
+
+            keyboard = []
+
+            for city in results:
+                keyboard.append(
+                    [
+                        InlineKeyboardButton(
+                            city,
+                            callback_data=f"city_{city}"
+                        )
+                    ]
+                )
+
+            await update.message.reply_text(
+                "Нашёл города:",
+                reply_markup=InlineKeyboardMarkup(keyboard)
+            )
+
+        else:
+
+            await update.message.reply_text(
+                "Город не найден. Попробуйте ещё раз."
+            )
+
+        return
+        
     if context.user_data.get("search_mode"):
 
         results = search_city(text)
