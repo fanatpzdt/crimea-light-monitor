@@ -49,6 +49,16 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     print("НАЖАТА КНОПКА:", query.data)
 
+    if query.data == "search_city":
+
+    context.user_data["search_mode"] = True
+
+    await query.edit_message_text(
+        "Введите первые буквы города:"
+    )
+
+    return
+    
     # Нет света
     if query.data == "no_power":
 
