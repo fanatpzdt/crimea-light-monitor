@@ -45,21 +45,23 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     query = update.callback_query
+
     await query.answer()
 
     print("НАЖАТА КНОПКА:", query.data)
 
+
     if query.data == "search_city":
 
-    context.user_data["search_mode"] = True
+        context.user_data["search_mode"] = True
 
-    await query.edit_message_text(
-        "Введите первые буквы города:"
-    )
+        await query.edit_message_text(
+            "Введите первые буквы города:"
+        )
 
-    return
-    
-    # Нет света
+        return
+
+
     if query.data == "no_power":
 
         context.user_data["status"] = "no_power"
@@ -71,7 +73,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         return
 
-    # Свет есть
+
     if query.data == "power_ok":
 
         context.user_data["status"] = "power_ok"
@@ -83,13 +85,18 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         return
 
-    # Выбран город
+
     if query.data.startswith("city_"):
 
-        city = query.data.replace("city_", "")
-        status = context.user_data.get("status")
+        city = query.data.replace(
+            "city_",
+            ""
+        )
 
         print("ГОРОД:", city)
+
+        status = context.user_data.get("status")
+
         print("СТАТУС:", status)
 
         if status is None:
@@ -97,61 +104,12 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await query.edit_message_text(
                 "Ошибка. Нажмите /start"
             )
+
             return
 
-        user_id = query.from_user.id
-
-        save_report(
-            user_id,
-            city,
-            status
+        await query.edit_message_text(
+            f"Вы выбрали: {city}"
         )
-
-        set_city_status(
-            city,
-            status
-        )
-
-        if status == "no_power":
-            set_power_start(city)
-
-        count = get_city_stats(city)
-
-        if status == "no_power":
-
-            if count >= ALERT_THRESHOLD:
-
-                await publish(
-                    context.application,
-                    city,
-                    count
-                )
-
-            text = (
-                f"🔴 Записано\n\n"
-                f"📍 {city}\n"
-                f"Нет света\n\n"
-                f"Подтвердили: {count}"
-            )
-
-        else:
-
-            ok_count = get_power_ok_count(city)
-
-            await publish_restore(
-                context.application,
-                city,
-                ok_count
-            )
-
-            text = (
-                f"🟢 Записано\n\n"
-                f"📍 {city}\n"
-                f"Свет есть"
-            )
-
-        await query.edit_message_text(text)
-
 
 async def message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
