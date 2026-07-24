@@ -96,34 +96,33 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         return
     
+        city = None
+
     if query.data.startswith("found_"):
 
         city = query.data.replace(
-
-        "found_",
-
-        ""
-
+            "found_",
+            ""
         )
 
-    print("ПОИСК ВЫБРАЛ ГОРОД:", city)
+        print("ПОИСК ВЫБРАЛ ГОРОД:", city)
 
 
-# обработка выбора города
-    if query.data.startswith("city_"):
+    elif query.data.startswith("city_"):
 
         city = query.data.replace(
             "city_",
             ""
         )
 
-        print("ГОРОД:", city)
 
+    if city:
+
+        print("ГОРОД:", city)
 
         status = context.user_data.get("status")
 
         print("СТАТУС:", status)
-
 
         if status is None:
 
@@ -172,9 +171,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
 
 
-        await query.edit_message_text(
-            text
-        )
+        await query.edit_message_text(text)
 
         return
 
