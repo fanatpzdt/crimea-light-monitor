@@ -24,6 +24,8 @@ from database import (
     create_reports_table,
     create_alerts_table,
     create_users_table,
+    save_user_city,
+    get_user_city,
     create_city_status_table,
     create_power_events_table,
     save_report,
