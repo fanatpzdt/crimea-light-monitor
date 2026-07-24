@@ -84,7 +84,18 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
 
         return
+          
+    if query.data == "back_city":
 
+        context.user_data["search_mode"] = False
+
+        await query.edit_message_text(
+            "Выберите город:",
+            reply_markup=cities_keyboard()
+        )
+
+        return
+    
     if query.data.startswith("found_"):
 
         city = query.data.replace(
