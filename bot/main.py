@@ -176,67 +176,54 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return
 
 
-    if query.data.startswith("city_"):
+        if query.data.startswith("city_"):
 
-    city = query.data.replace(
-        "city_",
-        ""
-    )
-
-    print("ГОРОД:", city)
-
-
-    # СОХРАНЕНИЕ ПРОФИЛЯ
-
-    if context.user_data.get("profile_city"):
-
-        print("СОХРАНЯЕМ ПРОФИЛЬ")
-
-        save_user_city(
-            query.from_user.id,
-            city
+        city = query.data.replace(
+            "city_",
+            ""
         )
 
-        context.user_data["profile_city"] = False
+        print("ГОРОД:", city)
 
 
-        await query.edit_message_text(
-            f"✅ Профиль создан\n\n"
-            f"📍 Ваш город: {city}\n\n"
-            "Теперь выберите действие:",
-            reply_markup=power_keyboard()
-        )
+        # если пользователь создаёт профиль
 
-        return
+        if context.user_data.get("profile_city"):
 
+            print("СОХРАНЯЕМ ПРОФИЛЬ")
 
-    # СТАРАЯ ЛОГИКА ОТКЛЮЧЕНИЙ
+            save_user_city(
+                query.from_user.id,
+                city
+            )
 
-    status = context.user_data.get("status")
-
-    print("СТАТУС:", status)
-        
-    print("ГОРОД:", city)
+            context.user_data["profile_city"] = False
 
 
-    # если человек выбирает город для профиля
-    if context.user_data.get("select_city"):
+            await query.edit_message_text(
+                f"✅ Профиль создан\n\n"
+                f"📍 Ваш город: {city}\n\n"
+                "Теперь выберите действие:",
+                reply_markup=power_keyboard()
+            )
 
-        save_user_city(
-            query.from_user.id,
-            city
-        )
-
-        context.user_data["select_city"] = False
+            return
 
 
-        await query.edit_message_text(
-            f"✅ Город сохранён\n\n"
-            f"📍 {city}\n\n"
-            "Теперь уведомления будут приходить автоматически."
-        )
+        status = context.user_data.get("status")
 
-        return
+        print("СТАТУС:", status)
+
+
+        if status is None:
+
+            await query.edit_message_text(
+                "Сначала выберите действие:\n\n"
+                "🔴 Нет света\n"
+                "🟢 Свет есть"
+            )
+
+            return
 
 
     # дальше идёт старая логика сообщений
