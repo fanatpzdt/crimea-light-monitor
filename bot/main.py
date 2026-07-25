@@ -226,6 +226,42 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         return
         
+    if query.data == "notifications_off":
+
+        set_notifications(
+            query.from_user.id,
+            0
+        )
+
+
+        await query.edit_message_text(
+            "👤 Ваш профиль\n\n"
+            f"📍 Город: {get_user_city(query.from_user.id)}\n"
+            "🔕 Уведомления: выключены",
+            reply_markup=profile_keyboard(False)
+        )
+
+        return
+
+
+
+    if query.data == "notifications_on":
+
+        set_notifications(
+            query.from_user.id,
+            1
+        )
+
+
+        await query.edit_message_text(
+            "👤 Ваш профиль\n\n"
+            f"📍 Город: {get_user_city(query.from_user.id)}\n"
+            "🔔 Уведомления: включены",
+            reply_markup=profile_keyboard(True)
+        )
+
+        return
+        
     # Смена города
 
     if query.data == "change_city":
