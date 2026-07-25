@@ -17,17 +17,21 @@ def power_keyboard():
                 "🟢 Свет есть",
                 callback_data="power_ok"
             )
+        ],
+        [
+            InlineKeyboardButton(
+                "👤 Профиль",
+                callback_data="profile"
+            )
         ]
     ]
 
     return InlineKeyboardMarkup(keyboard)
 
 
-
 def cities_keyboard():
 
     keyboard = []
-
 
     for city in POPULAR_CITIES:
 
@@ -40,7 +44,6 @@ def cities_keyboard():
             ]
         )
 
-
     keyboard.append(
         [
             InlineKeyboardButton(
@@ -50,8 +53,8 @@ def cities_keyboard():
         ]
     )
 
-
     return InlineKeyboardMarkup(keyboard)
+
 
 def search_result_keyboard(results):
 
@@ -76,5 +79,25 @@ def search_result_keyboard(results):
             )
         ]
     )
+
+    return InlineKeyboardMarkup(keyboard)
+
+
+def profile_keyboard():
+
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                "🏙 Сменить город",
+                callback_data="change_city"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "⬅️ Назад",
+                callback_data="home"
+            )
+        ]
+    ]
 
     return InlineKeyboardMarkup(keyboard)
