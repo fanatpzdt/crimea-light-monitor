@@ -443,3 +443,48 @@ def get_city_users(city):
         user[0]
         for user in users
     ]
+    
+def get_notifications(telegram_id):
+
+    conn = connect()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        SELECT notifications
+        FROM users
+        WHERE telegram_id = ?
+        """,
+        (telegram_id,)
+    )
+
+    result = cursor.fetchone()
+
+    conn.close()
+
+    if result:
+        return result[0]
+
+    return 1
+
+
+
+def set_notifications(telegram_id, value):
+
+    conn = connect()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        UPDATE users
+        SET notifications = ?
+        WHERE telegram_id = ?
+        """,
+        (
+            value,
+            telegram_id
+        )
+    )
+
+    conn.commit()
+    conn.close()
