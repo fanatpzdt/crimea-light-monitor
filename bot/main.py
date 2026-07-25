@@ -142,10 +142,9 @@ if query.data == "profile":
     )
 
     return
-    
     if query.data == "change_city":
 
-        context.user_data["profile_city"] = True
+    context.user_data["profile_city"] = True
 
     await query.edit_message_text(
         "🏙 Выберите новый населённый пункт:",
@@ -153,8 +152,9 @@ if query.data == "profile":
     )
 
     return
-    
-    if query.data == "home":
+
+
+if query.data == "home":
 
     city = get_user_city(
         query.from_user.id
