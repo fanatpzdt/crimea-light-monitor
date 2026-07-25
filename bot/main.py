@@ -128,7 +128,45 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         return
 
+if query.data == "profile":
 
+    city = get_user_city(
+        query.from_user.id
+    )
+
+    await query.edit_message_text(
+        f"👤 Ваш профиль\n\n"
+        f"📍 Город: {city}\n\n"
+        "Выберите действие:",
+        reply_markup=profile_keyboard()
+    )
+
+    return
+    if query.data == "change_city":
+
+    context.user_data["profile_city"] = True
+
+    await query.edit_message_text(
+        "🏙 Выберите новый населённый пункт:",
+        reply_markup=cities_keyboard()
+    )
+
+    return
+    if query.data == "home":
+
+    city = get_user_city(
+        query.from_user.id
+    )
+
+    await query.edit_message_text(
+        f"⚡ Crimea Light Monitor\n\n"
+        f"📍 Ваш город: {city}\n\n"
+        "Что сейчас происходит?",
+        reply_markup=power_keyboard()
+    )
+
+    return
+    
     # город из поиска
 
     if query.data.startswith("found_"):
