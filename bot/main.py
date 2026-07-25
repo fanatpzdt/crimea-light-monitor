@@ -18,6 +18,7 @@ from keyboards import (
     cities_keyboard,
     search_result_keyboard,
     profile_keyboard,
+    main_menu
 )
 from parser import parse_message
 
@@ -66,11 +67,11 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
     await update.message.reply_text(
-        f"⚡ Crimea Light Monitor\n\n"
+        f"⚡Crimea Light Monitor\n\n"
         f"📍 Ваш город: {city}\n\n"
         "Что сейчас происходит?",
-        reply_markup=power_keyboard()
-    )
+        reply_markup=main_menu()
+        )
     return
 
 async def save_power_report(query, context, city):
