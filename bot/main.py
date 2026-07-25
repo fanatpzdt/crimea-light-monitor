@@ -13,7 +13,12 @@ from telegram.ext import (
 )
 
 from config import ALERT_THRESHOLD
-from keyboards import power_keyboard, cities_keyboard, search_result_keyboard
+from keyboards import (
+    power_keyboard,
+    cities_keyboard,
+    search_result_keyboard,
+    profile_keyboard,
+)
 from parser import parse_message
 
 from channel import publish, publish_restore
