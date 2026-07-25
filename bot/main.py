@@ -70,7 +70,63 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
     return
 
+async def save_power_report(query, context, city):
 
+    status = context.user_data.get("status")
+
+    if status is None:
+        await query.edit_message_text(
+            "Сначала выберите действие"
+        )
+        return
+
+
+    user_id = query.from_user.id
+
+
+    save_report(
+        user_id,
+        city,
+        status
+    )
+
+
+    set_city_status(
+        city,
+        status
+    )
+
+
+    count = get_city_stats(city)
+
+
+    print("ГОРОД:", city)
+    print("СТАТУС:", status)
+    print("СЧЁТЧИК:", count)
+
+
+    if status == "no_power":
+
+        text = (
+            f"🔴 Записано\n\n"
+            f"📍 {city}\n"
+            f"Нет света\n\n"
+            f"👥 Подтвердили: {count}"
+        )
+
+
+    else:
+
+        text = (
+            f"🟢 Записано\n\n"
+            f"📍 {city}\n"
+            f"Свет есть"
+        )
+
+
+    await query.edit_message_text(
+        text
+    )
     
 async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
