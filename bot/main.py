@@ -447,29 +447,53 @@ async def message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
     user_id = update.message.from_user.id
     
-    if context.user_data.get("search_mode"):
+        if text == "⚡ Сообщить":
 
-        results = search_city(text)
-
-        if results:
-
-            await update.message.reply_text(
-                "🔎 Результаты поиска:\n\n"
-                "Выберите населённый пункт:",
-                reply_markup=search_result_keyboard(results)
-            )
-
-        else:
-
-            await update.message.reply_text(
-                "❌ Город не найден.\n\n"
-                "Попробуйте ввести первые буквы ещё раз."
-            )
-
-        context.user_data["search_mode"] = False
+        await update.message.reply_text(
+            "Выберите действие:",
+            reply_markup=power_keyboard()
+        )
 
         return
 
+
+    if text == "👤 Профиль":
+
+        city = get_user_city(
+            update.message.from_user.id
+        )
+
+        notifications = get_notifications(
+            update.message.from_user.id
+        )
+
+
+        await update.message.reply_text(
+            f"👤 Ваш профиль\n\n"
+            f"📍 Город: {city}\n\n"
+            f"🔔 Уведомления: "
+            f"{'включены' if notifications else 'выключены'}",
+            reply_markup=profile_keyboard(
+                notifications == 1
+            )
+        )
+
+        return
+
+
+    if text == "🏙 Мой город":
+
+        city = get_user_city(
+            update.message.from_user.id
+        )
+
+        await update.message.reply_text(
+            f"📍 Ваш город: {city}",
+            reply_markup=main_menu()
+        )
+
+        return
+        
 async def stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     conn = connect()
@@ -501,7 +525,61 @@ async def stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await update.message.reply_text(text)
 
+async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
+    text = update.message.text
+
+
+    if text == "👤 Профиль":
+
+        city = get_user_city(
+            update.message.from_user.id
+        )
+
+        notifications = get_notifications(
+            update.message.from_user.id
+        )
+
+        status = (
+            "🔔 включены"
+            if notifications
+            else
+            "🔕 выключены"
+        )
+
+        await update.message.reply_text(
+            f"👤 Ваш профиль\n\n"
+            f"📍 Город: {city}\n"
+            f"{status}",
+            reply_markup=profile_keyboard(notifications == 1)
+        )
+
+        return
+
+
+    if text == "🏙 Мой город":
+
+        city = get_user_city(
+            update.message.from_user.id
+        )
+
+        await update.message.reply_text(
+            f"📍 Ваш город: {city}",
+            reply_markup=main_menu()
+        )
+
+        return
+
+
+    if text == "⚡ Сообщить":
+
+        await update.message.reply_text(
+            "Выберите действие:",
+            reply_markup=power_keyboard()
+        )
+
+        return
+        
 def main():
 
     create_table()
