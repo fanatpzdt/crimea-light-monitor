@@ -39,6 +39,9 @@ from database import (
     get_power_ok_count,
     set_city_status,
     set_power_start,
+    get_notifications,
+    set_notifications
+
 )
 
 
