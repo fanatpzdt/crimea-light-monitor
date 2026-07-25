@@ -1,4 +1,9 @@
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import (
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    ReplyKeyboardMarkup,
+    KeyboardButton
+)
 
 from cities import POPULAR_CITIES
 
@@ -128,4 +133,19 @@ def profile_keyboard(notifications=True):
     )
 
 
-    return InlineKeyboardMarkup(keyboard)
+    return InlineKeyboardMarkup(def main_menu():
+
+    keyboard = [
+        [
+            KeyboardButton("⚡ Сообщить")
+        ],
+        [
+            KeyboardButton("👤 Профиль"),
+            KeyboardButton("🏙 Мой город")
+        ]
+    ]
+
+    return ReplyKeyboardMarkup(
+        keyboard,
+        resize_keyboard=True
+    )
