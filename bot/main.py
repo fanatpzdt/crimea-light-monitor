@@ -72,7 +72,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
     
-
 async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     query = update.callback_query
@@ -81,6 +80,8 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     print("НАЖАТА КНОПКА:", query.data)
 
+
+    # Поиск другого города
 
     if query.data == "search_city":
 
@@ -93,83 +94,121 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
 
+    # Нет света
+
     if query.data == "no_power":
 
         context.user_data["status"] = "no_power"
 
-        await query.edit_message_text(
-            "Выберите город:",
-            reply_markup=cities_keyboard()
+        city = get_user_city(
+            query.from_user.id
         )
+
+        if city:
+
+            await save_power_report(
+                query,
+                context,
+                city
+            )
+
+        else:
+
+            await query.edit_message_text(
+                "Выберите ваш город:",
+                reply_markup=cities_keyboard()
+            )
 
         return
 
+
+    # Свет есть
 
     if query.data == "power_ok":
 
         context.user_data["status"] = "power_ok"
 
-        await query.edit_message_text(
-            "Выберите город:",
-            reply_markup=cities_keyboard()
+        city = get_user_city(
+            query.from_user.id
         )
+
+        if city:
+
+            await save_power_report(
+                query,
+                context,
+                city
+            )
+
+        else:
+
+            await query.edit_message_text(
+                "Выберите ваш город:",
+                reply_markup=cities_keyboard()
+            )
 
         return
 
 
-    if query.data == "back_city":
+    # Профиль
 
-        context.user_data["search_mode"] = False
+    if query.data == "profile":
+
+        city = get_user_city(
+            query.from_user.id
+        )
+
+        if city is None:
+            city = "не выбран"
 
         await query.edit_message_text(
-            "Выберите город:",
-            reply_markup=cities_keyboard()
+            f"👤 Ваш профиль\n\n"
+            f"📍 Город: {city}\n\n"
+            "Что хотите изменить?",
+            reply_markup=profile_keyboard()
         )
 
         return
+        
+    # Смена города
 
-if query.data == "profile":
-
-    city = get_user_city(
-        query.from_user.id
-    )
-
-    await query.edit_message_text(
-        f"👤 Ваш профиль\n\n"
-        f"📍 Город: {city}\n\n"
-        "Выберите действие:",
-        reply_markup=profile_keyboard()
-    )
-
-    return
     if query.data == "change_city":
 
-    context.user_data["profile_city"] = True
+        context.user_data["profile_city"] = True
 
-    await query.edit_message_text(
-        "🏙 Выберите новый населённый пункт:",
-        reply_markup=cities_keyboard()
-    )
+        await query.edit_message_text(
+            "🏙 Выберите новый населённый пункт:",
+            reply_markup=cities_keyboard()
+        )
 
-    return
+        return
 
 
-if query.data == "home":
+    # Назад в главное меню
 
-    city = get_user_city(
-        query.from_user.id
-    )
+    if query.data == "home":
 
-    await query.edit_message_text(
-        f"⚡ Crimea Light Monitor\n\n"
-        f"📍 Ваш город: {city}\n\n"
-        "Что сейчас происходит?",
-        reply_markup=power_keyboard()
-    )
+        city = get_user_city(
+            query.from_user.id
+        )
 
-    return
-    
-    # город из поиска
+        if city is None:
+            city = "не выбран"
+
+        await query.edit_message_text(
+            f"⚡ Crimea Light Monitor\n\n"
+            f"📍 Ваш город: {city}\n\n"
+            "Что сейчас происходит?",
+            reply_markup=power_keyboard()
+        )
+
+        return
+
+
+    city = None
+
+
+    # Город из поиска
 
     if query.data.startswith("found_"):
 
@@ -180,38 +219,42 @@ if query.data == "home":
 
         print("ПОИСК ВЫБРАЛ ГОРОД:", city)
 
-    # обычный город
+
+    # Город из списка
 
     elif query.data.startswith("city_"):
 
-          city = query.data.replace(
+        city = query.data.replace(
             "city_",
             ""
         )
 
-        print("ГОРОД:", city)
+        print("ВЫБРАН ГОРОД:", city)
+
 
     else:
 
         return
 
 
-    # первый выбор города - создание профиля
+    # Если пользователь меняет или создаёт профиль
 
     if context.user_data.get("profile_city"):
 
-        print("СОХРАНЯЕМ ПРОФИЛЬ")
+        print("СОХРАНЯЕМ ГОРОД В ПРОФИЛЬ:", city)
+
 
         save_user_city(
             query.from_user.id,
             city
         )
 
+
         context.user_data["profile_city"] = False
 
 
         await query.edit_message_text(
-            f"✅ Профиль создан\n\n"
+            f"✅ Профиль обновлён\n\n"
             f"📍 Ваш город: {city}\n\n"
             "Теперь выберите действие:",
             reply_markup=power_keyboard()
@@ -219,8 +262,7 @@ if query.data == "home":
 
         return
 
-
-    # обычная запись отключения
+    # Если город выбран, но действие не выбрано
 
     status = context.user_data.get("status")
 
@@ -230,12 +272,13 @@ if query.data == "home":
     if status is None:
 
         await query.edit_message_text(
-            "Сначала выберите:\n\n"
+            "Сначала выберите действие:\n\n"
             "🔴 Нет света\n"
             "🟢 Свет есть"
         )
 
         return
+
 
 
     user_id = query.from_user.id
@@ -257,9 +300,14 @@ if query.data == "home":
     count = get_city_stats(city)
 
 
+    print("ГОРОД:", city)
+    print("СТАТУС:", status)
     print("СЧЁТЧИК:", count)
     print("ЛИМИТ:", ALERT_THRESHOLD)
 
+
+
+    # Отправка поста в канал
 
     if status == "no_power" and count >= ALERT_THRESHOLD:
 
@@ -270,14 +318,18 @@ if query.data == "home":
         )
 
 
+
+    # Ответ пользователю
+
     if status == "no_power":
 
         text = (
             f"🔴 Записано\n\n"
             f"📍 {city}\n"
             f"Нет света\n\n"
-            f"Подтвердили: {count}"
+            f"👥 Подтвердили: {count}"
         )
+
 
     else:
 
@@ -288,10 +340,12 @@ if query.data == "home":
         )
 
 
-    await query.edit_message_text(text)
+    await query.edit_message_text(
+        text
+    )
 
     return
-
+    
 async def message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     text = update.message.text
