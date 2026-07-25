@@ -83,7 +83,7 @@ def search_result_keyboard(results):
     return InlineKeyboardMarkup(keyboard)
 
 
-def profile_keyboard():
+def profile_keyboard(notifications=True):
 
     keyboard = [
         [
@@ -91,13 +91,41 @@ def profile_keyboard():
                 "🏙 Сменить город",
                 callback_data="change_city"
             )
-        ],
+        ]
+    ]
+
+
+    if notifications:
+
+        keyboard.append(
+            [
+                InlineKeyboardButton(
+                    "🔕 Отключить уведомления",
+                    callback_data="notifications_off"
+                )
+            ]
+        )
+
+    else:
+
+        keyboard.append(
+            [
+                InlineKeyboardButton(
+                    "🔔 Включить уведомления",
+                    callback_data="notifications_on"
+                )
+            ]
+        )
+
+
+    keyboard.append(
         [
             InlineKeyboardButton(
                 "⬅️ Назад",
                 callback_data="home"
             )
         ]
-    ]
+    )
+
 
     return InlineKeyboardMarkup(keyboard)
