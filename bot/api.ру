@@ -3,7 +3,7 @@ from database import get_all_statuses
 
 
 app = FastAPI(
-    title="Крым Свет API"
+    title="Crimea Light API"
 )
 
 
@@ -11,3 +11,12 @@ app = FastAPI(
 def status():
 
     return get_all_statuses()
+
+
+@app.get("/")
+def home():
+
+    return {
+        "status": "ok",
+        "service": "Crimea Light API"
+    }
