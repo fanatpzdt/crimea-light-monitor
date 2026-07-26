@@ -1,40 +1,67 @@
+from telegram.constants import ParseMode
 from config import CHANNEL_ID
 from database import connect
 
 
-async def publish(application, city, count):
-
+async def send_alert(bot, city, count):
     text = (
         "⚡ <b>Отключение электроэнергии</b>\n\n"
         f"📍 <b>{city}</b>\n\n"
-        "🔴 Свет отсутствует\n\n"
+        "🔴 Свет отсутствует\n"
         f"👥 Подтвердили: {count}\n\n"
-        "⚡ Crimea Light Monitor"
+        "Crimea Light Monitor"
     )
 
-
-    msg = await application.bot.send_message(
+    msg = await bot.send_message(
         chat_id=CHANNEL_ID,
         text=text,
-        parse_mode="HTML"
+        parse_mode=ParseMode.HTML
     )
-
 
     db = connect()
     cur = db.cursor()
 
-
     cur.execute(
         """
-        INSERT OR REPLACE INTO alerts
-        VALUES (?,?)
+        INSERT OR REPLACE INTO alerts(city, message_id)
+        VALUES(?,?)
         """,
-        (
-            city,
-            msg.message_id
-        )
+        (city, msg.message_id)
     )
 
-
     db.commit()
+    db.close()
+
+
+async def restore_alert(bot, city):
+    db = connect()
+    cur = db.cursor()
+
+    cur.execute(
+        "SELECT message_id FROM alerts WHERE city=?",
+        (city,)
+    )
+
+    row = cur.fetchone()
+
+    if row:
+        await bot.edit_message_text(
+            chat_id=CHANNEL_ID,
+            message_id=row[0],
+            text=(
+                "🟢 <b>Электроснабжение восстановлено</b>\n\n"
+                f"📍 <b>{city}</b>\n\n"
+                "✅ Свет появился\n\n"
+                "Crimea Light Monitor"
+            ),
+            parse_mode=ParseMode.HTML
+        )
+
+        cur.execute(
+            "DELETE FROM alerts WHERE city=?",
+            (city,)
+        )
+
+        db.commit()
+
     db.close()
