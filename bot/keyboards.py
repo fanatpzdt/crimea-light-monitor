@@ -1,7 +1,8 @@
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup
 
 
 def cities_keyboard():
+
     cities = [
         "Симферополь",
         "Севастополь",
@@ -9,99 +10,67 @@ def cities_keyboard():
         "Керчь",
         "Евпатория",
         "Феодосия",
-        "Алушта",
-        "Бахчисарай",
         "Джанкой",
         "Красноперекопск",
         "Армянск",
-        "Саки",
+        "Бахчисарай",
+        "Алушта",
         "Белогорск",
-        "Щёлкино",
-        "Судак"
+        "Саки",
+        "Судак",
+        "Щёлкино"
     ]
 
     keyboard = []
 
     for city in cities:
-        keyboard.append(
-            [
-                InlineKeyboardButton(
-                    city,
-                    callback_data=f"city_{city}"
-                )
-            ]
-        )
-
-    keyboard.append(
-        [
+        keyboard.append([
             InlineKeyboardButton(
-                "🔍 Найти город",
-                callback_data="search_city"
+                city,
+                callback_data=f"city_{city}"
             )
-        ]
-    )
+        ])
 
     return InlineKeyboardMarkup(keyboard)
 
 
 def power_keyboard():
-    return InlineKeyboardMarkup(
+
+    return InlineKeyboardMarkup([
         [
-            [
-                InlineKeyboardButton(
-                    "🔴 Нет света",
-                    callback_data="no_power"
-                )
-            ],
-            [
-                InlineKeyboardButton(
-                    "🟢 Свет появился",
-                    callback_data="power_ok"
-                )
-            ]
+            InlineKeyboardButton(
+                "🔴 Нет света",
+                callback_data="no_power"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "🟢 Свет появился",
+                callback_data="power_ok"
+            )
         ]
-    )
+    ])
 
 
 def main_menu():
-    return InlineKeyboardMarkup(
+
+    return ReplyKeyboardMarkup(
         [
-            [
-                InlineKeyboardButton(
-                    "⚡ Сообщить",
-                    callback_data="report"
-                )
-            ],
-            [
-                InlineKeyboardButton(
-                    "👤 Профиль",
-                    callback_data="profile"
-                )
-            ],
-            [
-                InlineKeyboardButton(
-                    "🏙 Сменить город",
-                    callback_data="change_city"
-                )
-            ]
-        ]
+            ["⚡ Сообщить"],
+            ["🏙 Выбрать другой город"],
+            ["👤 Профиль"]
+        ],
+        resize_keyboard=True
     )
 
 
 def profile_keyboard():
-    return InlineKeyboardMarkup(
+
+    return InlineKeyboardMarkup([
         [
-            [
-                InlineKeyboardButton(
-                    "🏙 Сменить город",
-                    callback_data="change_city"
-                )
-            ],
-            [
-                InlineKeyboardButton(
-                    "⬅️ Назад",
-                    callback_data="home"
-                )
-            ]
+            InlineKeyboardButton(
+                "🏙 Сменить город",
+                callback_data="change_city"
+            )
         ]
-    )
+    ])
