@@ -1,0 +1,13 @@
+from fastapi import FastAPI
+from database import get_all_statuses
+
+
+app = FastAPI(
+    title="Крым Свет API"
+)
+
+
+@app.get("/status")
+def status():
+
+    return get_all_statuses()
