@@ -7,7 +7,16 @@ from telegram.ext import (
     CallbackQueryHandler,
     MessageHandler,
     ContextTypes,
-    filters,
+    filters
+)
+
+from config import ALERT_THRESHOLD
+
+from keyboards import (
+    cities_keyboard,
+    power_keyboard,
+    main_menu,
+    profile_keyboard
 )
 
 from database import (
@@ -18,15 +27,10 @@ from database import (
     count_no_power
 )
 
-from keyboards import (
-    cities_keyboard,
-    power_keyboard,
-    main_menu
-)
+from channel import send_alert, restore_alert
 
-from channel import publish
 
-from config import ALERT_THRESHOLD
+# ---------------- START ----------------
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -36,8 +40,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     city = get_city(user_id)
 
     if city is None:
-
-        context.user_data["select_city"] = True
 
         await update.message.reply_text(
             "⚡ Crimea Light Monitor\n\n"
@@ -50,10 +52,13 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await update.message.reply_text(
         f"⚡ Crimea Light Monitor\n\n"
-        f"📍 Ваш город: {city}\n\n"
-        "Что происходит?",
+        f"📍 Ваш город: {city}",
         reply_markup=main_menu()
     )
+
+
+
+# ---------------- BUTTONS ----------------
 
 
 async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -81,15 +86,41 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
             city
         )
 
-
-        context.user_data["city"] = city
-
-
         await query.edit_message_text(
             f"✅ Город сохранён\n\n"
             f"📍 {city}\n\n"
-            "Выберите действие:",
-            reply_markup=power_keyboard()
+            "Теперь можно сообщать о состоянии света."
+        )
+
+        return
+
+
+
+    # смена города
+
+    if data == "change_city":
+
+        await query.edit_message_text(
+            "Выберите новый город:",
+            reply_markup=cities_keyboard()
+        )
+
+        return
+
+
+
+    # профиль
+
+    if data == "profile":
+
+        city = get_city(
+            query.from_user.id
+        )
+
+        await query.edit_message_text(
+            f"👤 Профиль\n\n"
+            f"📍 Город: {city or 'не выбран'}",
+            reply_markup=profile_keyboard()
         )
 
         return
@@ -104,12 +135,10 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
             query.from_user.id
         )
 
-
         if city is None:
 
             await query.edit_message_text(
-                "Сначала выберите город",
-                reply_markup=cities_keyboard()
+                "Сначала выберите город."
             )
 
             return
@@ -137,17 +166,16 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
             print("ОТПРАВЛЯЮ ПОСТ")
 
-            await publish(
-                context.application,
+            await send_alert(
+                context.bot,
                 city,
                 count
             )
 
 
         await query.edit_message_text(
-            f"🔴 Записано\n\n"
+            f"🔴 Нет света\n\n"
             f"📍 {city}\n"
-            f"Нет света\n\n"
             f"👥 Подтвердили: {count}"
         )
 
@@ -155,7 +183,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 
-    # свет есть
+    # свет появился
 
     if data == "power_ok":
 
@@ -163,34 +191,27 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
             query.from_user.id
         )
 
+        if city:
 
-        if city is None:
-
-            await query.edit_message_text(
-                "Сначала выберите город"
+            await restore_alert(
+                context.bot,
+                city
             )
-
-            return
-
-
-        save_report(
-            query.from_user.id,
-            city,
-            "power_ok"
-        )
 
 
         await query.edit_message_text(
-            f"🟢 Записано\n\n"
-            f"📍 {city}\n"
-            "Свет есть"
+            f"🟢 Свет есть\n\n"
+            f"📍 {city}"
         )
 
         return
 
 
 
-async def message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+# ---------------- TEXT MENU ----------------
+
+
+async def text_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     text = update.message.text
 
@@ -198,35 +219,42 @@ async def message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if text == "⚡ Сообщить":
 
         await update.message.reply_text(
-            "Выберите:",
+            "Что произошло?",
             reply_markup=power_keyboard()
         )
 
         return
 
 
-    if text == "🏙 Мой город":
+
+    if text == "👤 Профиль":
 
         city = get_city(
             update.message.from_user.id
         )
 
-
         await update.message.reply_text(
-            f"📍 Ваш город: {city}",
-            reply_markup=main_menu()
+            f"👤 Профиль\n\n"
+            f"📍 Город: {city or 'не выбран'}",
+            reply_markup=profile_keyboard()
         )
 
         return
 
 
 
-async def stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if text == "🏙 Выбрать другой город":
 
-    await update.message.reply_text(
-        "Статистика временно отключена"
-    )
+        await update.message.reply_text(
+            "Выберите город:",
+            reply_markup=cities_keyboard()
+        )
 
+        return
+
+
+
+# ---------------- RUN ----------------
 
 
 def main():
@@ -255,14 +283,6 @@ def main():
 
 
     app.add_handler(
-        CommandHandler(
-            "stats",
-            stats
-        )
-    )
-
-
-    app.add_handler(
         CallbackQueryHandler(
             button
         )
@@ -272,7 +292,7 @@ def main():
     app.add_handler(
         MessageHandler(
             filters.TEXT & ~filters.COMMAND,
-            message
+            text_menu
         )
     )
 
