@@ -81,7 +81,8 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     print("КНОПКА:", data)
 
-        if data == "back":
+
+    if data == "back":
 
         city = get_user_city(
             query.from_user.id
@@ -99,6 +100,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         return
 
+        
     if data == "search_city":
 
         context.user_data["search_city"] = True
