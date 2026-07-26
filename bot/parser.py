@@ -1,86 +1,95 @@
-import re
+import requests
+from bs4 import BeautifulSoup
 
 
-CITIES = [
-    "Симферополь",
-    "Севастополь",
-    "Ялта",
-    "Алушта",
-    "Керчь",
-    "Феодосия",
-    "Евпатория",
-    "Джанкой",
-    "Армянск",
-    "Красноперекопск",
-    "Бахчисарай",
-    "Белогорск",
-    "Саки",
-    "Судак",
-    "Старый Крым",
-    "Щёлкино",
-    "Инкерман",
-    "Гурзуф",
-    "Массандра",
-    "Ливадия",
-    "Гаспра",
-    "Кореиз",
-    "Форос",
-    "Коктебель",
-    "Орджоникидзе",
-    "Черноморское",
-    "Раздольное",
-    "Первомайское",
-    "Красногвардейское",
-    "Нижнегорский",
-    "Советский",
-    "Кировское",
-    "Ленино",
-    "Приморский",
-    "Мирный",
-    "Николаевка",
-    "Новофёдоровка"
+NEWS_PAGE = "https://crimea-energy.ru/about/news/"
+
+
+KEYWORDS = [
+    "электроснабж",
+    "отключ",
+    "обесточ",
+    "огранич",
+    "восстанов"
 ]
 
 
-PROBLEMS = {
-    "нет света": "Нет света",
-    "отключили": "Нет света",
-    "вырубили": "Нет света",
-    "электричества нет": "Нет света",
-    "свет моргает": "Мигает свет",
-    "скачет напряжение": "Напряжение",
-    "низкое напряжение": "Напряжение"
-}
+def get_latest_news():
+
+    r = requests.get(
+        NEWS_PAGE,
+        timeout=10
+    )
+
+    r.encoding = "utf-8"
 
 
-def parse_message(text):
+    soup = BeautifulSoup(
+        r.text,
+        "html.parser"
+    )
 
-    text_lower = text.lower()
 
-    city = None
+    links = soup.find_all("a")
 
-    for c in CITIES:
-        if c.lower() in text_lower:
-            city = c
-            break
 
-    problem = None
+    for link in links:
 
-    for key, value in PROBLEMS.items():
-        if key in text_lower:
-            problem = value
-            break
+        title = link.text.strip()
 
-    duration = None
 
-    m = re.search(r"(\d+)\s*(мин|час)", text_lower)
+        if not title:
+            continue
 
-    if m:
-        duration = m.group(0)
 
-    return {
-        "city": city,
-        "district": None,
-        "problem": problem,
-        "duration": duration
-    }
+        text = title.lower()
+
+
+        if any(
+            word in text
+            for word in KEYWORDS
+        ):
+
+            url = link.get("href")
+
+
+            if url.startswith("/"):
+
+                url = (
+                    "https://crimea-energy.ru"
+                    + url
+                )
+
+
+            return {
+                "title": title,
+                "url": url
+            }
+
+
+    return None
+
+
+
+def parse_news(url):
+
+    r = requests.get(
+        url,
+        timeout=10
+    )
+
+    r.encoding = "utf-8"
+
+
+    soup = BeautifulSoup(
+        r.text,
+        "html.parser"
+    )
+
+
+    text = soup.get_text(
+        "\n"
+    )
+
+
+    return text
