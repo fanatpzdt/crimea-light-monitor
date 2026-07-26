@@ -276,12 +276,16 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
         await query.edit_message_text(
-            f"🔴 Нет света\n\n"
-            f"📍 {city}\n"
-            f"👥 Подтвердили: {count}",
-            reply_markup=main_menu()
-        )
+    f"🔴 Нет света\n\n"
+    f"📍 {city}\n"
+    f"👥 Подтвердили: {count}",
+    reply_markup=None
+)
 
+await query.message.reply_text(
+    "Что дальше?",
+    reply_markup=main_menu()
+)
         return
 
 
