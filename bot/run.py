@@ -1,12 +1,9 @@
+import asyncio
 import threading
 import uvicorn
 
 from main import main as bot_main
 from api import app
-
-
-def start_bot():
-    bot_main()
 
 
 def start_api():
@@ -17,9 +14,11 @@ def start_api():
     )
 
 
-threading.Thread(
-    target=start_bot
-).start()
+api_thread = threading.Thread(
+    target=start_api
+)
+
+api_thread.start()
 
 
-start_api()
+bot_main()
