@@ -1,5 +1,6 @@
 import os
 
+from cities import search_city
 from telegram import Update
 from telegram.ext import (
     Application,
