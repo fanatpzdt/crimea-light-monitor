@@ -2,4 +2,4 @@ import os
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 CHANNEL_ID = int(os.getenv("CHANNEL_ID"))
-ALERT_THRESHOLD = 3
+ALERT_THRESHOLD = 1
