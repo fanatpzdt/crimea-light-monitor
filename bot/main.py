@@ -12,13 +12,11 @@ from config import ALERT_THRESHOLD
 from keyboards import cities_keyboard, power_keyboard
 
 from database import (
-    create_table,
-    create_reports_table,
-    create_users_table,
-    save_user_city,
-    get_user_city,
+    init_db,
+    save_city,
+    get_city,
     save_report,
-    get_city_stats,
+    count_no_power
 )
 
 from channel import publish
