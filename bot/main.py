@@ -78,7 +78,21 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.answer()
 
     data = query.data
+    
+if data == "home":
 
+    city = get_user_city(
+        query.from_user.id
+    )
+
+    await query.edit_message_text(
+        f"⚡ Crimea Light Monitor\n\n"
+        f"📍 Ваш город: {city or 'не выбран'}",
+        reply_markup=main_menu()
+    )
+
+    return
+    
     print("КНОПКА:", data)
 
 
