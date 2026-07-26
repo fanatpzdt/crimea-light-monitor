@@ -30,7 +30,8 @@ from database import (
     save_report,
     get_city_stats,
     get_notifications,
-    set_notifications
+    set_notifications,
+    has_report
 )
 
 from cities import search_city
@@ -262,7 +263,23 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
             return
 
+if has_report(
+    query.from_user.id,
+    city
+):
 
+    await query.edit_message_text(
+        f"🔴 Вы уже подтвердили отсутствие света\n\n"
+        f"📍 {city}"
+    )
+
+    await query.message.reply_text(
+        "Главное меню:",
+        reply_markup=main_menu()
+    )
+
+    return
+    
         save_report(
             query.from_user.id,
             city,
