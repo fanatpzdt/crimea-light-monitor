@@ -488,3 +488,49 @@ def set_notifications(telegram_id, value):
 
     conn.commit()
     conn.close()
+
+def get_all_statuses():
+
+    conn = connect()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT
+            city,
+            status,
+            updated_at
+        FROM city_status
+    """)
+
+    rows = cursor.fetchall()
+
+    conn.close()
+
+
+    result = []
+
+    for row in rows:
+
+        city = row[0]
+        status = row[1]
+        updated = row[2]
+
+
+        result.append({
+
+            "name": city,
+
+            "statusCode":
+                "red" if status == "no_power"
+                else "green",
+
+            "status":
+                "Нет света" if status == "no_power"
+                else "Есть свет",
+
+            "updated": updated
+
+        })
+
+
+    return result
