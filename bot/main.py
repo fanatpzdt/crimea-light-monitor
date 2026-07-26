@@ -101,8 +101,7 @@ async def save_power_report(query, context, city):
     )
 
 
-    count = get_city_stats(city)
-
+        count = get_city_stats(city)
 
     print("ГОРОД:", city)
     print("СТАТУС:", status)
@@ -110,15 +109,15 @@ async def save_power_report(query, context, city):
     print("ЛИМИТ:", ALERT_THRESHOLD)
 
 
-if status == "no_power" and count >= ALERT_THRESHOLD:
+    if status == "no_power" and count >= ALERT_THRESHOLD:
 
-    print("ОТПРАВЛЯЮ В КАНАЛ")
+        print("ОТПРАВЛЯЮ В КАНАЛ")
 
-    await publish(
-        context.application,
-        city,
-        count
-    )
+        await publish(
+            context.application,
+            city,
+            count
+        )
 
     if status == "no_power":
 
