@@ -160,7 +160,7 @@ if data == "home":
 
     # Город из поиска
 
-    if data.startswith("found_"):
+if data.startswith("found_"):
 
     city = data.replace(
         "found_",
