@@ -148,29 +148,30 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if data.startswith("found_"):
 
-        city = data.replace(
-            "found_",
-            ""
-        )
+    city = data.replace(
+        "found_",
+        ""
+    )
 
-        save_user_city(
-            query.from_user.id,
-            city
-        )
-
-
-        await query.edit_message_text(
-            f"✅ Город выбран\n\n"
-            f"📍 {city}"
-        )
+    save_user_city(
+        query.from_user.id,
+        city
+    )
 
 
-        await query.message.reply_text(
-            "Главное меню:",
-            reply_markup=main_menu()
-        )
+    await query.edit_message_text(
+        f"✅ Город выбран\n\n"
+        f"📍 {city}",
+        reply_markup=None
+    )
 
-        return
+
+    await query.message.reply_text(
+        "Главное меню:",
+        reply_markup=main_menu()
+    )
+
+    return
 
 
 
