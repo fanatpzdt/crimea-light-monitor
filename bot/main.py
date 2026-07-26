@@ -21,11 +21,16 @@ from keyboards import (
 )
 
 from database import (
-    init_db,
-    save_city,
-    get_city,
+    create_table,
+    create_reports_table,
+    create_alerts_table,
+    create_users_table,
+    save_user_city,
+    get_user_city,
     save_report,
-    count_no_power
+    get_city_stats,
+    get_notifications,
+    set_notifications
 )
 
 from channel import send_alert, restore_alert
@@ -38,7 +43,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     user_id = update.message.from_user.id
 
-    city = get_city(user_id)
+    city = get_user_city(user_id)
 
     if city is None:
 
@@ -70,9 +75,45 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     data = query.data
 
+if data == "search_city":
+
+    context.user_data["search_city"] = True
+
+    await query.edit_message_text(
+        "🔎 Введите первые буквы города:"
+    )
+
+    return
+    
     print("КНОПКА:", data)
 
+if data.startswith("found_"):
 
+    city = data.replace(
+        "found_",
+        ""
+    )
+
+
+    save_user_city(
+        query.from_user.id,
+        city
+    )
+
+
+    await query.edit_message_text(
+        f"✅ Город сохранён\n\n"
+        f"📍 {city}",
+        reply_markup=None
+    )
+
+    await query.message.reply_text(
+        "Главное меню:",
+        reply_markup=main_menu()
+    )
+
+    return
+    
     # выбор города
 
     if data.startswith("city_"):
@@ -82,7 +123,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
             ""
         )
 
-        save_city(
+        save_user_city(
             query.from_user.id,
             city
         )
@@ -114,7 +155,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if data == "profile":
 
-        city = get_city(
+        city = get_user_city(
             query.from_user.id
         )
 
@@ -132,7 +173,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if data == "no_power":
 
-        city = get_city(
+        city = get_user_city(
             query.from_user.id
         )
 
@@ -152,7 +193,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
 
 
-        count = count_no_power(city)
+        count = get_city_stats(city)
 
 
         print(
@@ -188,7 +229,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if data == "power_ok":
 
-        city = get_city(
+        city = get_user_city(
             query.from_user.id
         )
 
@@ -216,7 +257,32 @@ async def text_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     text = update.message.text
 
+if context.user_data.get("search_city"):
 
+    results = search_city(text)
+
+    context.user_data["search_city"] = False
+
+
+    if not results:
+
+        await update.message.reply_text(
+            "Не нашёл город. Попробуйте ещё раз."
+        )
+
+        return
+
+
+    from keyboards import search_result_keyboard
+
+
+    await update.message.reply_text(
+        "Выберите город:",
+        reply_markup=search_result_keyboard(results)
+    )
+
+    return
+    
     if text == "⚡ Сообщить":
 
         await update.message.reply_text(
@@ -230,7 +296,7 @@ async def text_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if text == "👤 Профиль":
 
-        city = get_city(
+        city = get_user_city(
             update.message.from_user.id
         )
 
@@ -260,7 +326,10 @@ async def text_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 def main():
 
-    init_db()
+    create_table()
+    create_reports_table()
+    create_alerts_table()
+    create_users_table()
 
 
     token = os.getenv(
