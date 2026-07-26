@@ -286,7 +286,7 @@ await query.message.reply_text(
     "Что дальше?",
     reply_markup=main_menu()
 )
-        return
+return
 
 
 
