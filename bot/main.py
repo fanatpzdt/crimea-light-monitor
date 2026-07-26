@@ -229,7 +229,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     # Нет света
 
-        if data == "no_power":
+    if data == "no_power":
 
         city = get_user_city(
             query.from_user.id
