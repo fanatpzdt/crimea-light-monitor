@@ -140,9 +140,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 def main():
 
-    create_table()
-    create_reports_table()
-    create_users_table()
+    init_db()
 
 
     token = os.getenv(
