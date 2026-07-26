@@ -622,10 +622,6 @@ def main():
 
     print("Бот запущен")
 
-    asyncio.run(
-    test_channel(app)
-    )
-
     app.run_polling()
 
 
