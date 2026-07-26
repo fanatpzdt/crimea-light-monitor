@@ -63,7 +63,7 @@ def search_result_keyboard(cities):
         [
             InlineKeyboardButton(
                 "⬅️ Назад",
-                callback_data="back_city"
+                callback_data="back"
             )
         ]
     )
@@ -94,12 +94,11 @@ def power_keyboard():
             [
                 InlineKeyboardButton(
                     "⬅️ Назад",
-                    callback_data="home"
+                    callback_data="back"
                 )
             ]
         ]
     )
-
 
 
 # Профиль
@@ -136,7 +135,7 @@ def profile_keyboard(notifications=True):
             [
                 InlineKeyboardButton(
                     "⬅️ Назад",
-                    callback_data="home"
+                    callback_data="back"
                 )
             ]
         ]
