@@ -503,29 +503,13 @@ def get_all_statuses():
 
     conn.close()
 
-
     result = []
 
-
-    for city, status, updated in rows:
-
+    for row in rows:
         result.append({
-
-            "name": city,
-
-            "statusCode":
-                "red"
-                if status == "no_power"
-                else "green",
-
-            "status":
-                "Нет света"
-                if status == "no_power"
-                else "Есть свет",
-
-            "updated": updated
-
+            "city": row[0],
+            "status": row[1],
+            "updated_at": row[2]
         })
-
 
     return result
