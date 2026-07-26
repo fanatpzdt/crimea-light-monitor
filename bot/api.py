@@ -1,16 +1,15 @@
 from fastapi import FastAPI
-from bot.database import get_all_statuses
-
-
-app = FastAPI(
-    title="Crimea Light API"
+from bot.database import (
+    get_all_statuses,
+    create_city_status_table
 )
 
 
-@app.get("/status")
-def status():
+app = FastAPI()
 
-    return get_all_statuses()
+
+# создаём таблицу при запуске API
+create_city_status_table()
 
 
 @app.get("/")
@@ -20,3 +19,9 @@ def home():
         "status": "ok",
         "service": "Crimea Light API"
     }
+
+
+@app.get("/status")
+def status():
+
+    return get_all_statuses()
