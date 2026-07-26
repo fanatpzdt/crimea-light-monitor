@@ -447,7 +447,7 @@ async def message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
     user_id = update.message.from_user.id
     
-        if text == "⚡ Сообщить":
+    if text == "⚡ Сообщить":
 
         await update.message.reply_text(
             "Выберите действие:",
