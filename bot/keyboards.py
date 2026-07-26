@@ -1,30 +1,50 @@
-from telegram import InlineKeyboardButton,InlineKeyboardMarkup
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 
 def cities_keyboard():
-
-    cities=[
+    cities = [
         "Симферополь",
         "Севастополь",
         "Ялта",
-        "Керчь"
+        "Керчь",
+        "Евпатория",
+        "Феодосия",
+        "Алушта",
+        "Бахчисарай",
+        "Джанкой",
+        "Красноперекопск",
+        "Армянск",
+        "Саки",
+        "Белогорск",
+        "Щёлкино",
+        "Судак"
     ]
 
-    return InlineKeyboardMarkup(
-        [
+    keyboard = []
+
+    for city in cities:
+        keyboard.append(
             [
                 InlineKeyboardButton(
-                    c,
-                    callback_data=f"city_{c}"
+                    city,
+                    callback_data=f"city_{city}"
                 )
             ]
-            for c in cities
+        )
+
+    keyboard.append(
+        [
+            InlineKeyboardButton(
+                "🔍 Найти город",
+                callback_data="search_city"
+            )
         ]
     )
 
+    return InlineKeyboardMarkup(keyboard)
+
 
 def power_keyboard():
-
     return InlineKeyboardMarkup(
         [
             [
@@ -35,22 +55,53 @@ def power_keyboard():
             ],
             [
                 InlineKeyboardButton(
-                    "🟢 Свет есть",
+                    "🟢 Свет появился",
                     callback_data="power_ok"
                 )
             ]
         ]
     )
-    
+
+
 def main_menu():
-
-    from telegram import ReplyKeyboardMarkup
-
-    return ReplyKeyboardMarkup(
+    return InlineKeyboardMarkup(
         [
-            ["⚡ Сообщить"],
-            ["🏙 Мой город"]
-        ],
-        resize_keyboard=True
+            [
+                InlineKeyboardButton(
+                    "⚡ Сообщить",
+                    callback_data="report"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "👤 Профиль",
+                    callback_data="profile"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "🏙 Сменить город",
+                    callback_data="change_city"
+                )
+            ]
+        ]
     )
-    
+
+
+def profile_keyboard():
+    return InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton(
+                    "🏙 Сменить город",
+                    callback_data="change_city"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "⬅️ Назад",
+                    callback_data="home"
+                )
+            ]
+        ]
+    )
