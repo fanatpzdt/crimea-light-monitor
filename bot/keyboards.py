@@ -133,7 +133,8 @@ def profile_keyboard(notifications=True):
     )
 
 
-        return InlineKeyboardMarkup(keyboard)
+    return InlineKeyboardMarkup(keyboard)
+
 
 
 def main_menu():
@@ -147,6 +148,7 @@ def main_menu():
             KeyboardButton("🏙 Мой город")
         ]
     ]
+
 
     return ReplyKeyboardMarkup(
         keyboard,
