@@ -1,12 +1,16 @@
 import sqlite3
+from datetime import datetime
 
 
-DB_NAME = "database.db"
+DB = "database.db"
 
 
 def connect():
-    return sqlite3.connect(DB_NAME)
+    return sqlite3.connect(DB)
 
+
+
+# ================= INIT =================
 
 
 def create_table():
@@ -16,9 +20,13 @@ def create_table():
 
     cur.execute("""
     CREATE TABLE IF NOT EXISTS users(
+
         user_id INTEGER PRIMARY KEY,
+
         city TEXT,
+
         notifications INTEGER DEFAULT 1
+
     )
     """)
 
@@ -34,11 +42,17 @@ def create_reports_table():
 
     cur.execute("""
     CREATE TABLE IF NOT EXISTS reports(
+
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+
         user_id INTEGER,
+
         city TEXT,
+
         status TEXT,
-        created TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+        created TEXT
+
     )
     """)
 
@@ -54,8 +68,13 @@ def create_alerts_table():
 
     cur.execute("""
     CREATE TABLE IF NOT EXISTS alerts(
+
         city TEXT PRIMARY KEY,
-        message_id INTEGER
+
+        message_id INTEGER,
+
+        status TEXT DEFAULT 'no_power'
+
     )
     """)
 
@@ -64,24 +83,13 @@ def create_alerts_table():
 
 
 
-# Совместимость с твоим main.py
-
 def create_users_table():
+
     create_table()
 
 
-def create_city_status_table():
-    pass
 
-
-def create_power_events_table():
-    pass
-
-
-
-# -------------------------
-# Пользователи
-# -------------------------
+# ================= USERS =================
 
 
 def save_user_city(user_id, city):
@@ -89,21 +97,24 @@ def save_user_city(user_id, city):
     db = connect()
     cur = db.cursor()
 
-
-    cur.execute(
-        """
-        INSERT INTO users(user_id, city, notifications)
-        VALUES(?,?,1)
-
-        ON CONFLICT(user_id)
-        DO UPDATE SET city=excluded.city
-        """,
-        (
-            user_id,
-            city
-        )
+    cur.execute("""
+    INSERT INTO users(
+        user_id,
+        city,
+        notifications
     )
 
+    VALUES(?,?,1)
+
+    ON CONFLICT(user_id)
+
+    DO UPDATE SET city=excluded.city
+
+    """,
+    (
+        user_id,
+        city
+    ))
 
     db.commit()
     db.close()
@@ -115,7 +126,6 @@ def get_user_city(user_id):
     db = connect()
     cur = db.cursor()
 
-
     cur.execute(
         """
         SELECT city
@@ -125,29 +135,21 @@ def get_user_city(user_id):
         (user_id,)
     )
 
-
     row = cur.fetchone()
 
     db.close()
 
-
-    if row:
-        return row[0]
-
-    return None
+    return row[0] if row else None
 
 
 
-# -------------------------
-# Уведомления
-# -------------------------
+# ================= NOTIFICATIONS =================
 
 
 def get_notifications(user_id):
 
     db = connect()
     cur = db.cursor()
-
 
     cur.execute(
         """
@@ -158,11 +160,9 @@ def get_notifications(user_id):
         (user_id,)
     )
 
-
     row = cur.fetchone()
 
     db.close()
-
 
     if row:
         return row[0]
@@ -176,12 +176,14 @@ def set_notifications(user_id, value):
     db = connect()
     cur = db.cursor()
 
-
     cur.execute(
         """
         UPDATE users
+
         SET notifications=?
+
         WHERE user_id=?
+
         """,
         (
             value,
@@ -189,15 +191,42 @@ def set_notifications(user_id, value):
         )
     )
 
-
     db.commit()
     db.close()
 
 
 
-# -------------------------
-# Отчёты
-# -------------------------
+def get_users_by_city(city):
+
+    db = connect()
+    cur = db.cursor()
+
+    cur.execute(
+        """
+        SELECT user_id
+
+        FROM users
+
+        WHERE city=?
+
+        AND notifications=1
+
+        """,
+        (city,)
+    )
+
+    rows = cur.fetchall()
+
+    db.close()
+
+    return [
+        r[0]
+        for r in rows
+    ]
+
+
+
+# ================= REPORTS =================
 
 
 def save_report(user_id, city, status):
@@ -205,23 +234,28 @@ def save_report(user_id, city, status):
     db = connect()
     cur = db.cursor()
 
-
     cur.execute(
         """
-        INSERT INTO reports(
-            user_id,
-            city,
-            status
+        INSERT INTO reports
+
+        VALUES(
+            NULL,
+            ?,
+            ?,
+            ?,
+            ?
         )
-        VALUES(?,?,?)
+
         """,
         (
             user_id,
             city,
-            status
+            status,
+            datetime.now().strftime(
+                "%Y-%m-%d %H:%M"
+            )
         )
     )
-
 
     db.commit()
     db.close()
@@ -233,119 +267,54 @@ def get_city_stats(city):
     db = connect()
     cur = db.cursor()
 
-
     cur.execute(
         """
         SELECT COUNT(*)
+
         FROM reports
+
         WHERE city=?
+
         AND status='no_power'
+
         """,
         (city,)
     )
 
-
-    count = cur.fetchone()[0]
-
+    result = cur.fetchone()[0]
 
     db.close()
 
-
-    return count
-
+    return result
 
 
-def get_power_ok_count(city):
+
+# ================= CITY STATUS =================
+
+
+def get_city_status(city):
 
     db = connect()
     cur = db.cursor()
 
-
     cur.execute(
         """
-        SELECT COUNT(*)
+        SELECT status, created
+
         FROM reports
+
         WHERE city=?
-        AND status='power_ok'
+
+        ORDER BY id DESC
+
+        LIMIT 1
+
         """,
         (city,)
     )
-
-
-    count = cur.fetchone()[0]
-
-
-    db.close()
-
-    return count
-
-
-
-# -------------------------
-# Статусы
-# -------------------------
-
-
-def set_city_status(city,status):
-    pass
-
-
-def set_power_start(city):
-    pass
-
-
-
-# -------------------------
-# Канал
-# -------------------------
-
-
-def get_alert(city):
-
-    db = connect()
-    cur = db.cursor()
-
-
-    cur.execute(
-        """
-        SELECT message_id
-        FROM alerts
-        WHERE city=?
-        """,
-        (city,)
-    )
-
 
     row = cur.fetchone()
 
-
     db.close()
 
-
-    if row:
-        return row[0]
-
-    return None
-
-
-
-def save_alert(city,message_id):
-
-    db = connect()
-    cur = db.cursor()
-
-
-    cur.execute(
-        """
-        INSERT OR REPLACE INTO alerts
-        VALUES(?,?)
-        """,
-        (
-            city,
-            message_id
-        )
-    )
-
-
-    db.commit()
-    db.close()
+    return row
