@@ -409,22 +409,9 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
     print("ГОРОД:", city)
     print("СТАТУС:", status)
     print("СЧЁТЧИК:", count)
-    print("ЛИМИТ:", ALERT_THRESHOLD)
+    print("ЛИМИТ:", 
 
-
-
-    # Отправка поста в канал
-
-    if status == "no_power" and count >= ALERT_THRESHOLD:
-
-        print("ОТПРАВЛЯЮ В КАНАЛ")
-
-        await publish(
-            context.application,
-            city,
-            count
-        )
-
+    
     # Ответ пользователю
 
     if status == "no_power":
