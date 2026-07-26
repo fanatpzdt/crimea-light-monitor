@@ -144,12 +144,31 @@ def search_city(text):
 
     text = text.lower().strip()
 
+    if not text:
+        return []
+
+
+    # сначала ищем совпадения с начала слова
+
     results = []
 
     for city in ALL_CITIES:
 
-        if text in city.lower():
-
+        if city.lower().startswith(text):
             results.append(city)
 
+
+    # если мало результатов — ищем внутри
+
+    if len(results) < 5:
+
+        for city in ALL_CITIES:
+
+            if text in city.lower() and city not in results:
+                results.append(city)
+
+
     return results[:5]
+
+def popular_cities():
+    return POPULAR_CITIES
