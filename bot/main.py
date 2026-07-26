@@ -1,5 +1,4 @@
 import os
-import asyncio
 
 from cities import search_city
 from search import search_city
