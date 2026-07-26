@@ -78,43 +78,9 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.answer()
 
     data = query.data
-    
-if data == "home":
 
-    city = get_user_city(
-        query.from_user.id
-    )
-
-    await query.edit_message_text(
-        f"⚡ Crimea Light Monitor\n\n"
-        f"📍 Ваш город: {city or 'не выбран'}",
-        reply_markup=main_menu()
-    )
-
-    return
-    
     print("КНОПКА:", data)
 
-
-    # Назад
-
-    if data == "back":
-
-        city = get_user_city(
-            query.from_user.id
-        )
-
-        await query.edit_message_text(
-            f"⚡ Crimea Light Monitor\n\n"
-            f"📍 Ваш город: {city or 'не выбран'}",
-            reply_markup=main_menu()
-        )
-
-        return
-
-
-
-    # Поиск города
 
     if data == "search_city":
 
@@ -122,6 +88,35 @@ if data == "home":
 
         await query.edit_message_text(
             "🔎 Введите первые буквы города:"
+        )
+
+        return
+
+
+    if data.startswith("found_"):
+
+        city = data.replace(
+            "found_",
+            ""
+        )
+
+
+        save_user_city(
+            query.from_user.id,
+            city
+        )
+
+
+        await query.edit_message_text(
+            f"✅ Город сохранён\n\n"
+            f"📍 {city}",
+            reply_markup=None
+        )
+
+
+        await query.message.reply_text(
+            "Главное меню:",
+            reply_markup=main_menu()
         )
 
         return
@@ -154,40 +149,7 @@ if data == "home":
             reply_markup=main_menu()
         )
 
-        return
-
-
-
-    # Город из поиска
-
-if data.startswith("found_"):
-
-    city = data.replace(
-        "found_",
-        ""
-    )
-
-    save_user_city(
-        query.from_user.id,
-        city
-    )
-
-
-    await query.edit_message_text(
-        f"✅ Город выбран\n\n"
-        f"📍 {city}",
-        reply_markup=None
-    )
-
-
-    await query.message.reply_text(
-        "Главное меню:",
-        reply_markup=main_menu()
-    )
-
-    return
-
-
+        
 
     # Смена города
 
