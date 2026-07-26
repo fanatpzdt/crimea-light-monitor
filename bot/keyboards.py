@@ -1,156 +1,43 @@
-from telegram import (
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-    ReplyKeyboardMarkup,
-    KeyboardButton
-)
-
-from cities import POPULAR_CITIES
-
-
-def power_keyboard():
-
-    keyboard = [
-        [
-            InlineKeyboardButton(
-                "🔴 Нет света",
-                callback_data="no_power"
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                "🟢 Свет есть",
-                callback_data="power_ok"
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                "👤 Профиль",
-                callback_data="profile"
-            )
-        ]
-    ]
-
-    return InlineKeyboardMarkup(keyboard)
+from telegram import InlineKeyboardButton,InlineKeyboardMarkup
 
 
 def cities_keyboard():
 
-    keyboard = []
-
-    for city in POPULAR_CITIES:
-
-        keyboard.append(
-            [
-                InlineKeyboardButton(
-                    f"🏙 {city}",
-                    callback_data=f"city_{city}"
-                )
-            ]
-        )
-
-    keyboard.append(
-        [
-            InlineKeyboardButton(
-                "🔍 Найти другой населённый пункт",
-                callback_data="search_city"
-            )
-        ]
-    )
-
-    return InlineKeyboardMarkup(keyboard)
-
-
-def search_result_keyboard(results):
-
-    keyboard = []
-
-    for city in results:
-
-        keyboard.append(
-            [
-                InlineKeyboardButton(
-                    f"📍 {city}",
-                    callback_data=f"found_{city}"
-                )
-            ]
-        )
-
-    keyboard.append(
-        [
-            InlineKeyboardButton(
-                "⬅️ Назад",
-                callback_data="back_city"
-            )
-        ]
-    )
-
-    return InlineKeyboardMarkup(keyboard)
-
-
-def profile_keyboard(notifications=True):
-
-    keyboard = [
-        [
-            InlineKeyboardButton(
-                "🏙 Сменить город",
-                callback_data="change_city"
-            )
-        ]
+    cities=[
+        "Симферополь",
+        "Севастополь",
+        "Ялта",
+        "Керчь"
     ]
 
-
-    if notifications:
-
-        keyboard.append(
-            [
-                InlineKeyboardButton(
-                    "🔕 Отключить уведомления",
-                    callback_data="notifications_off"
-                )
-            ]
-        )
-
-    else:
-
-        keyboard.append(
-            [
-                InlineKeyboardButton(
-                    "🔔 Включить уведомления",
-                    callback_data="notifications_on"
-                )
-            ]
-        )
-
-
-    keyboard.append(
+    return InlineKeyboardMarkup(
         [
-            InlineKeyboardButton(
-                "⬅️ Назад",
-                callback_data="home"
-            )
+            [
+                InlineKeyboardButton(
+                    c,
+                    callback_data=f"city_{c}"
+                )
+            ]
+            for c in cities
         ]
     )
 
 
-    return InlineKeyboardMarkup(keyboard)
+def power_keyboard():
 
-
-
-def main_menu():
-
-    keyboard = [
+    return InlineKeyboardMarkup(
         [
-            KeyboardButton("⚡ Сообщить")
-        ],
-        [
-            KeyboardButton("👤 Профиль"),
-            KeyboardButton("🏙 Мой город")
+            [
+                InlineKeyboardButton(
+                    "🔴 Нет света",
+                    callback_data="no_power"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "🟢 Свет есть",
+                    callback_data="power_ok"
+                )
+            ]
         ]
-    ]
-
-
-    return ReplyKeyboardMarkup(
-        keyboard,
-        resize_keyboard=True
     )
