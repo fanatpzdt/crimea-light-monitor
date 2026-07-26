@@ -619,8 +619,9 @@ def main():
 
     print("Бот запущен")
 
-    app.run_polling()
-
+app.run_polling(
+    post_init=test_channel
+)
 
 if __name__ == "__main__":
     main()
