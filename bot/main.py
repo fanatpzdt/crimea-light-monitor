@@ -251,79 +251,80 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if data == "no_power":
 
-        city = get_user_city(
-            query.from_user.id
-        )
-
-        if not city:
-
-            await query.edit_message_text(
-                "Сначала выберите город."
-            )
-
-            return
-
-if has_report(
-    query.from_user.id,
-    city
-):
-
-    await query.edit_message_text(
-        f"🔴 Вы уже подтвердили отсутствие света\n\n"
-        f"📍 {city}"
+    city = get_user_city(
+        query.from_user.id
     )
 
-    await query.message.reply_text(
-        "Главное меню:",
-        reply_markup=main_menu()
-    )
 
-    return
-    
-        save_report(
-            query.from_user.id,
-            city,
-            "no_power"
+    if not city:
+
+        await query.edit_message_text(
+            "Сначала выберите город."
         )
 
+        return
 
-        count = get_city_stats(city)
+
+    if has_report(
+        query.from_user.id,
+        city
+    ):
+
+        await query.edit_message_text(
+            f"🔴 Вы уже подтвердили отсутствие света\n\n"
+            f"📍 {city}"
+        )
+
+        await query.message.reply_text(
+            "Главное меню:",
+            reply_markup=main_menu()
+        )
+
+        return
 
 
-        print(
-            "ГОРОД:",
+    save_report(
+        query.from_user.id,
+        city,
+        "no_power"
+    )
+
+
+    count = get_city_stats(city)
+
+
+    print(
+        "ГОРОД:",
+        city,
+        "СЧЁТ:",
+        count
+    )
+
+
+    if count >= ALERT_THRESHOLD:
+
+        print("ОТПРАВЛЯЮ ПОСТ")
+
+        await send_alert(
+            context.bot,
             city,
-            "СЧЁТ:",
             count
         )
 
 
-        if count >= ALERT_THRESHOLD:
-
-            print("ОТПРАВЛЯЮ ПОСТ")
-
-            await send_alert(
-                context.bot,
-                city,
-                count
-            )
+    await query.edit_message_text(
+        f"🔴 Нет света\n\n"
+        f"📍 {city}\n"
+        f"👥 Подтвердили: {count}"
+    )
 
 
-        await query.edit_message_text(
-            f"🔴 Нет света\n\n"
-            f"📍 {city}\n"
-            f"👥 Подтвердили: {count}"
-        )
+    await query.message.reply_text(
+        "Что дальше?",
+        reply_markup=main_menu()
+    )
 
-
-        await query.message.reply_text(
-            "Что дальше?",
-            reply_markup=main_menu()
-        )
-
-
-        return
-        
+    return
     
 # ================= TEXT =================
 
