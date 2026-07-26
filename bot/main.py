@@ -275,22 +275,21 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
 
 
-        await query.edit_message_text(
-    f"🔴 Нет света\n\n"
-    f"📍 {city}\n"
-    f"👥 Подтвердили: {count}",
-    reply_markup=None
-)
+                await query.edit_message_text(
+            f"🔴 Нет света\n\n"
+            f"📍 {city}\n"
+            f"👥 Подтвердили: {count}"
+        )
 
-await query.message.reply_text(
-    "Что дальше?",
-    reply_markup=main_menu()
-)
-return
+        await query.message.reply_text(
+            "Что дальше?",
+            reply_markup=main_menu()
+        )
 
-
+        return
+        
     if data == "power_ok":
-
+        
         city = get_user_city(
             query.from_user.id
         )
