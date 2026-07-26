@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from database import (
+from bot.database import (
     get_all_statuses,
     create_city_status_table
 )
