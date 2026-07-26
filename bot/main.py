@@ -289,9 +289,6 @@ await query.message.reply_text(
 return
 
 
-
-    # Свет есть
-
     if data == "power_ok":
 
         city = get_user_city(
