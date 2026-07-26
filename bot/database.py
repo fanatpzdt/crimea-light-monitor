@@ -495,10 +495,7 @@ def get_all_statuses():
     cursor = conn.cursor()
 
     cursor.execute("""
-        SELECT
-            city,
-            status,
-            updated_at
+        SELECT city, status, updated_at
         FROM city_status
     """)
 
@@ -509,23 +506,21 @@ def get_all_statuses():
 
     result = []
 
-    for row in rows:
 
-        city = row[0]
-        status = row[1]
-        updated = row[2]
-
+    for city, status, updated in rows:
 
         result.append({
 
             "name": city,
 
             "statusCode":
-                "red" if status == "no_power"
+                "red"
+                if status == "no_power"
                 else "green",
 
             "status":
-                "Нет света" if status == "no_power"
+                "Нет света"
+                if status == "no_power"
                 else "Есть свет",
 
             "updated": updated
