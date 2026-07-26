@@ -133,7 +133,10 @@ def profile_keyboard(notifications=True):
     )
 
 
-    return InlineKeyboardMarkup(def main_menu():
+        return InlineKeyboardMarkup(keyboard)
+
+
+def main_menu():
 
     keyboard = [
         [
