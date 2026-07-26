@@ -407,13 +407,13 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if status == "no_power" and count >= ALERT_THRESHOLD:
 
+        print("ОТПРАВЛЯЮ В КАНАЛ")
+
         await publish(
             context.application,
             city,
             count
         )
-
-
 
     # Ответ пользователю
 
