@@ -81,6 +81,23 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     print("КНОПКА:", data)
 
+        if data == "back":
+
+        city = get_user_city(
+            query.from_user.id
+        )
+
+        await query.edit_message_text(
+            f"⚡ Crimea Light Monitor\n\n"
+            f"📍 Ваш город: {city or 'не выбран'}"
+        )
+
+        await query.message.reply_text(
+            "Главное меню:",
+            reply_markup=main_menu()
+        )
+
+        return
 
     if data == "search_city":
 
@@ -288,23 +305,6 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         return
         
-if data == "back":
-
-    city = get_user_city(
-        query.from_user.id
-    )
-
-    await query.edit_message_text(
-        f"⚡ Crimea Light Monitor\n\n"
-        f"📍 Ваш город: {city}",
-    )
-
-    await query.message.reply_text(
-        "Главное меню:",
-        reply_markup=main_menu()
-    )
-
-    return
     
 # ================= TEXT =================
 
