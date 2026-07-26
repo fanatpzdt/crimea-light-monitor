@@ -229,12 +229,11 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     # Нет света
 
-    if data == "no_power":
+        if data == "no_power":
 
         city = get_user_city(
             query.from_user.id
         )
-
 
         if not city:
 
@@ -267,7 +266,6 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
             print("ОТПРАВЛЯЮ ПОСТ")
 
-
             await send_alert(
                 context.bot,
                 city,
@@ -275,47 +273,20 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
 
 
-                await query.edit_message_text(
+        await query.edit_message_text(
             f"🔴 Нет света\n\n"
             f"📍 {city}\n"
             f"👥 Подтвердили: {count}"
         )
+
 
         await query.message.reply_text(
             "Что дальше?",
             reply_markup=main_menu()
         )
 
-        return
-        
-    if data == "power_ok":
-        
-        city = get_user_city(
-            query.from_user.id
-        )
-
-
-        if city:
-
-            await restore_alert(
-                context.bot,
-                city
-            )
-
-
-        await query.edit_message_text(
-            f"🟢 Свет есть\n\n"
-            f"📍 {city}"
-        )
- 
-        await query.message.reply_text(
-            "Главное меню:",
-            reply_markup=main_menu()
-        )
 
         return
-
-
 
 # ================= TEXT =================
 
