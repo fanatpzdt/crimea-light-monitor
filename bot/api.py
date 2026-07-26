@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from database import get_all_statuses
+from bot.database import get_all_statuses
 
 
 app = FastAPI(
