@@ -1,6 +1,5 @@
 import os
 
-from cities import search_city
 from telegram import Update
 from telegram.ext import (
     Application,
@@ -15,6 +14,7 @@ from config import ALERT_THRESHOLD
 
 from keyboards import (
     cities_keyboard,
+    search_result_keyboard,
     power_keyboard,
     main_menu,
     profile_keyboard
@@ -33,10 +33,15 @@ from database import (
     set_notifications
 )
 
-from channel import send_alert, restore_alert
+from cities import search_city
+
+from channel import (
+    send_alert,
+    restore_alert
+)
 
 
-# ---------------- START ----------------
+# ================= START =================
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -63,8 +68,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 
-
-# ---------------- BUTTONS ----------------
+# ================= BUTTONS =================
 
 
 async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -75,46 +79,42 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     data = query.data
 
-if data == "search_city":
-
-    context.user_data["search_city"] = True
-
-    await query.edit_message_text(
-        "🔎 Введите первые буквы города:"
-    )
-
-    return
-    
     print("КНОПКА:", data)
 
-if data.startswith("found_"):
 
-    city = data.replace(
-        "found_",
-        ""
-    )
+    # Назад
+
+    if data == "back":
+
+        city = get_user_city(
+            query.from_user.id
+        )
+
+        await query.edit_message_text(
+            f"⚡ Crimea Light Monitor\n\n"
+            f"📍 Ваш город: {city or 'не выбран'}",
+            reply_markup=main_menu()
+        )
+
+        return
 
 
-    save_user_city(
-        query.from_user.id,
-        city
-    )
+
+    # Поиск города
+
+    if data == "search_city":
+
+        context.user_data["search_city"] = True
+
+        await query.edit_message_text(
+            "🔎 Введите первые буквы города:"
+        )
+
+        return
 
 
-    await query.edit_message_text(
-        f"✅ Город сохранён\n\n"
-        f"📍 {city}",
-        reply_markup=None
-    )
 
-    await query.message.reply_text(
-        "Главное меню:",
-        reply_markup=main_menu()
-    )
-
-    return
-    
-    # выбор города
+    # Выбор города из списка
 
     if data.startswith("city_"):
 
@@ -128,22 +128,58 @@ if data.startswith("found_"):
             city
         )
 
+
         await query.edit_message_text(
             f"✅ Город сохранён\n\n"
-            f"📍 {city}\n\n"
-            "Теперь можно сообщать о состоянии света."
+            f"📍 {city}"
+        )
+
+
+        await query.message.reply_text(
+            "Главное меню:",
+            reply_markup=main_menu()
         )
 
         return
 
 
 
-    # смена города
+    # Город из поиска
+
+    if data.startswith("found_"):
+
+        city = data.replace(
+            "found_",
+            ""
+        )
+
+        save_user_city(
+            query.from_user.id,
+            city
+        )
+
+
+        await query.edit_message_text(
+            f"✅ Город выбран\n\n"
+            f"📍 {city}"
+        )
+
+
+        await query.message.reply_text(
+            "Главное меню:",
+            reply_markup=main_menu()
+        )
+
+        return
+
+
+
+    # Смена города
 
     if data == "change_city":
 
         await query.edit_message_text(
-            "Выберите новый город:",
+            "🏙 Выберите город:",
             reply_markup=cities_keyboard()
         )
 
@@ -151,7 +187,7 @@ if data.startswith("found_"):
 
 
 
-    # профиль
+    # Профиль
 
     if data == "profile":
 
@@ -159,17 +195,62 @@ if data.startswith("found_"):
             query.from_user.id
         )
 
+        notifications = get_notifications(
+            query.from_user.id
+        )
+
+
         await query.edit_message_text(
             f"👤 Профиль\n\n"
-            f"📍 Город: {city or 'не выбран'}",
-            reply_markup=profile_keyboard()
+            f"📍 Город: {city or 'не выбран'}\n"
+            f"🔔 Уведомления: "
+            f"{'включены' if notifications else 'выключены'}",
+            reply_markup=profile_keyboard(
+                notifications == 1
+            )
         )
 
         return
 
 
 
-    # нет света
+    # Уведомления
+
+    if data == "notifications_on":
+
+        set_notifications(
+            query.from_user.id,
+            1
+        )
+
+
+        await query.edit_message_text(
+            "🔔 Уведомления включены",
+            reply_markup=profile_keyboard(True)
+        )
+
+        return
+
+
+
+    if data == "notifications_off":
+
+        set_notifications(
+            query.from_user.id,
+            0
+        )
+
+
+        await query.edit_message_text(
+            "🔕 Уведомления выключены",
+            reply_markup=profile_keyboard(False)
+        )
+
+        return
+
+
+
+    # Нет света
 
     if data == "no_power":
 
@@ -177,7 +258,8 @@ if data.startswith("found_"):
             query.from_user.id
         )
 
-        if city is None:
+
+        if not city:
 
             await query.edit_message_text(
                 "Сначала выберите город."
@@ -208,6 +290,7 @@ if data.startswith("found_"):
 
             print("ОТПРАВЛЯЮ ПОСТ")
 
+
             await send_alert(
                 context.bot,
                 city,
@@ -218,20 +301,22 @@ if data.startswith("found_"):
         await query.edit_message_text(
             f"🔴 Нет света\n\n"
             f"📍 {city}\n"
-            f"👥 Подтвердили: {count}"
+            f"👥 Подтвердили: {count}",
+            reply_markup=main_menu()
         )
 
         return
 
 
 
-    # свет появился
+    # Свет есть
 
     if data == "power_ok":
 
         city = get_user_city(
             query.from_user.id
         )
+
 
         if city:
 
@@ -243,46 +328,50 @@ if data.startswith("found_"):
 
         await query.edit_message_text(
             f"🟢 Свет есть\n\n"
-            f"📍 {city}"
+            f"📍 {city}",
+            reply_markup=main_menu()
         )
 
         return
 
 
 
-# ---------------- TEXT MENU ----------------
+# ================= TEXT =================
 
 
 async def text_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     text = update.message.text
 
-if context.user_data.get("search_city"):
 
-    results = search_city(text)
+    # поиск города
 
-    context.user_data["search_city"] = False
+    if context.user_data.get("search_city"):
+
+        results = search_city(text)
 
 
-    if not results:
+        context.user_data["search_city"] = False
+
+
+        if not results:
+
+            await update.message.reply_text(
+                "Не нашёл город."
+            )
+
+            return
+
 
         await update.message.reply_text(
-            "Не нашёл город. Попробуйте ещё раз."
+            "Выберите город:",
+            reply_markup=search_result_keyboard(results)
         )
 
         return
 
 
-    from keyboards import search_result_keyboard
 
-
-    await update.message.reply_text(
-        "Выберите город:",
-        reply_markup=search_result_keyboard(results)
-    )
-
-    return
-    
     if text == "⚡ Сообщить":
 
         await update.message.reply_text(
@@ -300,28 +389,25 @@ if context.user_data.get("search_city"):
             update.message.from_user.id
         )
 
+
+        notifications = get_notifications(
+            update.message.from_user.id
+        )
+
+
         await update.message.reply_text(
             f"👤 Профиль\n\n"
             f"📍 Город: {city or 'не выбран'}",
-            reply_markup=profile_keyboard()
+            reply_markup=profile_keyboard(
+                notifications == 1
+            )
         )
 
         return
 
 
 
-    if text == "🏙 Выбрать другой город":
-
-        await update.message.reply_text(
-            "Выберите город:",
-            reply_markup=cities_keyboard()
-        )
-
-        return
-
-
-
-# ---------------- RUN ----------------
+# ================= RUN =================
 
 
 def main():
