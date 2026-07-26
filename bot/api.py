@@ -24,4 +24,17 @@ def home():
 @app.get("/status")
 def status():
 
-    return get_all_statuses()
+    try:
+        data = get_all_statuses()
+
+        return {
+            "ok": True,
+            "data": data
+        }
+
+    except Exception as e:
+
+        return {
+            "ok": False,
+            "error": str(e)
+        }
