@@ -41,3 +41,16 @@ def power_keyboard():
             ]
         ]
     )
+    
+def main_menu():
+
+    from telegram import ReplyKeyboardMarkup
+
+    return ReplyKeyboardMarkup(
+        [
+            ["⚡ Сообщить"],
+            ["🏙 Мой город"]
+        ],
+        resize_keyboard=True
+    )
+    
