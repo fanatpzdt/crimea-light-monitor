@@ -88,7 +88,7 @@ async def save_power_report(query, context, city):
     user_id = query.from_user.id
 
 
-    save_report(
+        save_report(
         user_id,
         city,
         status
@@ -101,7 +101,7 @@ async def save_power_report(query, context, city):
     )
 
 
-            count = get_city_stats(city)
+    count = get_city_stats(city)
 
     print("ГОРОД:", city)
     print("СТАТУС:", status)
