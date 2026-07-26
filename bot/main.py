@@ -581,10 +581,11 @@ async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
         
         async def test_channel(application):
-    await application.bot.send_message(
-        chat_id="@energy_crimea",
-        text="⚡ Тест: бот подключён к каналу."
-    )
+            
+            await application.bot.send_message(
+                chat_id="@energy_crimea",
+                text="⚡ Тест: бот подключён к каналу."
+            )
     
 def main():
 
