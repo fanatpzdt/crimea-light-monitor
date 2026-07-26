@@ -1,4 +1,5 @@
 import os
+import asyncio
 
 from cities import search_city
 from search import search_city
@@ -621,9 +622,11 @@ def main():
 
     print("Бот запущен")
 
-    app.run_polling(
-        post_init=test_channel
+    asyncio.run(
+    test_channel(app)
     )
+
+    app.run_polling()
 
 
 if __name__ == "__main__":
