@@ -318,3 +318,27 @@ def get_city_status(city):
     db.close()
 
     return row
+
+def has_report(user_id, city):
+    db = connect()
+    cur = db.cursor()
+
+    cur.execute(
+        """
+        SELECT id
+        FROM reports
+        WHERE user_id=?
+        AND city=?
+        AND status='no_power'
+        """,
+        (
+            user_id,
+            city
+        )
+    )
+
+    row = cur.fetchone()
+
+    db.close()
+
+    return row is not None
