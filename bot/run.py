@@ -1,7 +1,7 @@
 import threading
 import uvicorn
 
-from main import main as bot_main
+
 from api import app
 
 
