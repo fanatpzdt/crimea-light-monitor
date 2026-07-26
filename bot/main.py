@@ -595,22 +595,23 @@ def main():
     create_users_table()
     create_city_status_table()
     create_power_events_table()
-    
+
     token = os.getenv("BOT_TOKEN")
 
     app = (
-    Application.builder()
-    .token(token)
-    .connect_timeout(30)
-    .read_timeout(30)
-    .write_timeout(30)
-    .pool_timeout(30)
-    .build()
-)
+        Application.builder()
+        .token(token)
+        .connect_timeout(30)
+        .read_timeout(30)
+        .write_timeout(30)
+        .pool_timeout(30)
+        .build()
+    )
 
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("stats", stats))
     app.add_handler(CallbackQueryHandler(button))
+
     app.add_handler(
         MessageHandler(
             filters.TEXT & ~filters.COMMAND,
@@ -618,7 +619,7 @@ def main():
         )
     )
 
-        print("Бот запущен")
+    print("Бот запущен")
 
     app.run_polling(
         post_init=test_channel
