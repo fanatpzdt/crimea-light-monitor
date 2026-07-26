@@ -309,7 +309,11 @@ return
 
         await query.edit_message_text(
             f"🟢 Свет есть\n\n"
-            f"📍 {city}",
+            f"📍 {city}"
+        )
+ 
+        await query.message.reply_text(
+            "Главное меню:",
             reply_markup=main_menu()
         )
 
