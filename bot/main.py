@@ -396,16 +396,16 @@ async def text_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         return
 
-async def news_job(context):
+async def news_job(context: ContextTypes.DEFAULT_TYPE):
 
-    print("Проверяю новости...")
+    print("Проверка новостей...")
 
     news = check_news()
 
     if news:
 
         print(
-            "Найдена новая новость:",
+            "Новая новость:",
             news["title"]
         )
 
