@@ -73,9 +73,13 @@ NEWS_CHANNEL_ID = os.getenv("NEWS_CHANNEL_ID")
 async def send_news(bot, news):
 
     message = (
-        f"⚡ <b>{news['title']}</b>\n\n"
-        f"{news['text'][:3500]}\n\n"
-        f"🔗 Источник:\n{news['url']}"
+    "⚡ <b>Официальная информация</b>\n"
+    "🏢 <b>ГУП РК «Крымэнерго»</b>\n\n"
+    f"📰 <b>{news['title']}</b>\n\n"
+    f"{news['text'][:1800]}\n\n"
+    "🔗 Источник:\n"
+    f"{news['url']}\n\n"
+    "⚡ Crimea Light Monitor"
     )
 
     await bot.send_message(
