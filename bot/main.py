@@ -398,14 +398,28 @@ async def text_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def news_job(context):
 
+    print("Проверяю новости...")
+
     news = check_news()
 
     if news:
+
+        print(
+            "Найдена новая новость:",
+            news["title"]
+        )
+
         await send_news(
             context.bot,
             news
         )
 
+    else:
+
+        print(
+            "Новых новостей нет"
+        )
+        
 # ================= RUN =================
 
 
