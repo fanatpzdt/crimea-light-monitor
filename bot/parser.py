@@ -85,7 +85,7 @@ def parse_news(url):
     )
 
 
-    # удаляем лишнее
+    # убираем мусор
     for tag in soup.find_all(
         [
             "script",
@@ -98,27 +98,18 @@ def parse_news(url):
         tag.decompose()
 
 
-    # ищем текст новости
-    candidates = soup.find_all(
-        ["div", "article", "section"]
-    )
+    # ищем блок с текстом новости
+    for div in soup.find_all("div"):
 
-
-    for block in candidates:
-
-        text = block.get_text(
+        text = div.get_text(
             "\n",
             strip=True
         )
 
 
-        if (
-            "Действуют ограничения" in text
-            or
-            "обесточена часть населенных пунктов" in text
-        ):
+        if "Энергетики" in text and len(text) < 5000:
 
             return text
 
 
-    return "Не удалось найти текст новости"
+    return "Текст новости не найден"
