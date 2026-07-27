@@ -65,3 +65,21 @@ async def restore_alert(bot, city):
         db.commit()
 
     db.close()
+
+NEWS_CHANNEL_ID = os.getenv("NEWS_CHANNEL_ID")
+
+
+async def send_news(bot, news):
+
+    message = (
+        f"⚡ <b>{news['title']}</b>\n\n"
+        f"{news['text'][:3500]}\n\n"
+        f"🔗 {news['url']}"
+    )
+
+    await bot.send_message(
+        NEWS_CHANNEL_ID,
+        message,
+        parse_mode="HTML",
+        disable_web_page_preview=False
+    )
