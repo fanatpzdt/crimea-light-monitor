@@ -472,9 +472,10 @@ def main():
 
 # запускаем проверку новостей каждые 5 минут
 
-print("Бот запущен")
+    print("Бот запущен")
 
-app.run_polling()
+
+    app.run_polling()
 
 
 
