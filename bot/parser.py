@@ -79,15 +79,14 @@ def parse_news(url):
 
     r.encoding = "utf-8"
 
-
     soup = BeautifulSoup(
         r.text,
         "html.parser"
     )
 
 
-    # убираем мусор
-    for tag in soup(
+    # удаляем лишнее
+    for tag in soup.find_all(
         [
             "script",
             "style",
@@ -99,36 +98,27 @@ def parse_news(url):
         tag.decompose()
 
 
-    # ищем основной текст новости
-    article = soup.find(
-        "article"
+    # ищем текст новости
+    candidates = soup.find_all(
+        ["div", "article", "section"]
     )
 
 
-    if article:
+    for block in candidates:
 
-        text = article.get_text(
-            "\n",
-            strip=True
-        )
-
-    else:
-
-        text = soup.get_text(
+        text = block.get_text(
             "\n",
             strip=True
         )
 
 
-    # убираем пустые строки
-    lines = []
+        if (
+            "Действуют ограничения" in text
+            or
+            "обесточена часть населенных пунктов" in text
+        ):
 
-    for line in text.split("\n"):
-
-        line = line.strip()
-
-        if line:
-            lines.append(line)
+            return text
 
 
-    return "\n\n".join(lines)
+    return "Не удалось найти текст новости"
