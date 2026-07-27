@@ -1,7 +1,8 @@
+import os
+
 from telegram.constants import ParseMode
 from config import CHANNEL_ID
 from database import connect
-
 
 async def send_alert(bot, city, count):
     text = (
@@ -74,12 +75,12 @@ async def send_news(bot, news):
     message = (
         f"⚡ <b>{news['title']}</b>\n\n"
         f"{news['text'][:3500]}\n\n"
-        f"🔗 {news['url']}"
+        f"🔗 Источник:\n{news['url']}"
     )
 
     await bot.send_message(
-        NEWS_CHANNEL_ID,
-        message,
-        parse_mode="HTML",
+        chat_id=CHANNEL_ID,
+        text=message,
+        parse_mode=ParseMode.HTML,
         disable_web_page_preview=False
     )
