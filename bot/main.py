@@ -1,5 +1,6 @@
 import os
 
+
 from telegram import Update
 from telegram.ext import (
     Application,
@@ -11,6 +12,8 @@ from telegram.ext import (
 )
 
 from config import ALERT_THRESHOLD
+
+from news_checker import check_news
 
 from keyboards import (
     cities_keyboard,
@@ -38,7 +41,8 @@ from cities import search_city
 
 from channel import (
     send_alert,
-    restore_alert
+    restore_alert,
+    send_news
 )
 
 
@@ -392,7 +396,15 @@ async def text_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         return
 
+async def news_job(context):
 
+    news = check_news()
+
+    if news:
+        await send_news(
+            context.bot,
+            news
+        )
 
 # ================= RUN =================
 
@@ -433,17 +445,22 @@ def main():
 
 
     app.add_handler(
-        MessageHandler(
-            filters.TEXT & ~filters.COMMAND,
-            text_menu
-        )
+    MessageHandler(
+        filters.TEXT & ~filters.COMMAND,
+        text_menu
     )
+)
 
+# запускаем проверку новостей каждые 5 минут
+app.job_queue.run_repeating(
+    news_job,
+    interval=300,
+    first=10
+)
 
-    print("Бот запущен")
+print("Бот запущен")
 
-
-    app.run_polling()
+app.run_polling()
 
 
 
