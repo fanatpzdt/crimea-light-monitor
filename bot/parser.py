@@ -85,40 +85,71 @@ def parse_news(url):
     )
 
 
-    # удаляем мусор
-    for tag in soup.find_all(
-        [
-            "script",
-            "style",
-            "header",
-            "footer",
-            "nav"
-        ]
-    ):
-        tag.decompose()
+    # весь текст страницы
+    text = soup.get_text(
+        "\n",
+        strip=True
+    )
 
 
-    paragraphs = []
+    # ищем начало новости
+    start_words = [
+        "Из-за внешнего воздействия",
+        "В связи с",
+        "В результате"
+    ]
 
-    for p in soup.find_all("p"):
+    start = None
 
-        text = p.get_text(
-            " ",
-            strip=True
-        )
+    for word in start_words:
+        pos = text.find(word)
 
-        if not text:
-            continue
-
-
-        # берём только полезные строки
-        if len(text) > 20:
-
-            paragraphs.append(text)
+        if pos != -1:
+            start = pos
+            break
 
 
-    result = "\n\n".join(paragraphs)
+    if start is None:
+        return "Не удалось найти текст новости"
 
 
-    # ограничение для Telegram
-    return result[:2500]
+    text = text[start:]
+
+
+    # обрезаем конец мусора
+    stop_words = [
+        "Благодарим",
+        "Телефон",
+        "Адрес",
+        "Пресс-служба",
+        "Поделиться"
+    ]
+
+
+    for word in stop_words:
+
+        pos = text.find(word)
+
+        if pos != -1:
+            text = text[:pos]
+
+
+    # чистим строки
+
+    lines = []
+
+    for line in text.split("\n"):
+
+        line = line.strip()
+
+        if (
+            line
+            and len(line) > 10
+        ):
+            lines.append(line)
+
+
+    result = "\n\n".join(lines)
+
+
+    return result[:1800]
