@@ -70,7 +70,6 @@ def get_latest_news():
     return None
 
 
-
 def parse_news(url):
 
     r = requests.get(
@@ -139,3 +138,16 @@ def parse_news(url):
 
 
     return "\n".join(lines)
+
+def parse_news(url):
+    r = requests.get(url, timeout=10)
+    r.encoding = "utf-8"
+
+    soup = BeautifulSoup(r.text, "html.parser")
+
+    article = soup.find("div", class_="itemFullText")
+
+    if article:
+        return article.get_text("\n", strip=True)
+
+    return soup.get_text("\n", strip=True)
