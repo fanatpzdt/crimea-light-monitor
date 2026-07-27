@@ -85,7 +85,7 @@ def parse_news(url):
     )
 
 
-    # убираем мусор
+    # удаляем мусор
     for tag in soup.find_all(
         [
             "script",
@@ -98,18 +98,27 @@ def parse_news(url):
         tag.decompose()
 
 
-    # ищем блок с текстом новости
-    for div in soup.find_all("div"):
+    paragraphs = []
 
-        text = div.get_text(
-            "\n",
+    for p in soup.find_all("p"):
+
+        text = p.get_text(
+            " ",
             strip=True
         )
 
-
-        if "Энергетики" in text and len(text) < 5000:
-
-            return text
+        if not text:
+            continue
 
 
-    return "Текст новости не найден"
+        # берём только полезные строки
+        if len(text) > 20:
+
+            paragraphs.append(text)
+
+
+    result = "\n\n".join(paragraphs)
+
+
+    # ограничение для Telegram
+    return result[:2500]
