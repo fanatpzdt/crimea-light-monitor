@@ -441,7 +441,12 @@ def main():
         .token(token)
         .build()
     )
-
+    
+    app.job_queue.run_repeating(
+        news_job,
+        interval=300,
+        first=10
+    )
 
     app.add_handler(
         CommandHandler(
@@ -466,11 +471,6 @@ def main():
 )
 
 # запускаем проверку новостей каждые 5 минут
-app.job_queue.run_repeating(
-    news_job,
-    interval=300,
-    first=10
-)
 
 print("Бот запущен")
 
