@@ -93,3 +93,16 @@ def parse_news(url):
 
 
     return text
+
+if __name__ == "__main__":
+    news = get_latest_news()
+
+    if not news:
+        print("Новости не найдены")
+    else:
+        print("Заголовок:", news["title"])
+        print("Ссылка:", news["url"])
+        print()
+
+        text = parse_news(news["url"])
+        print(text[:2000])
