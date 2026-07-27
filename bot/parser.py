@@ -80,29 +80,62 @@ def parse_news(url):
 
     r.encoding = "utf-8"
 
-
     soup = BeautifulSoup(
         r.text,
         "html.parser"
     )
 
 
-    text = soup.get_text(
-        "\n"
+    # удаляем мусор
+    for tag in soup([
+        "script",
+        "style",
+        "header",
+        "footer",
+        "nav"
+    ]):
+        tag.decompose()
+
+
+    # ищем основной контент новости
+    article = (
+        soup.find("article")
+        or
+        soup.find(
+            class_="news-detail"
+        )
+        or
+        soup.find(
+            class_="content"
+        )
     )
 
 
-    return text
+    if article:
 
-if __name__ == "__main__":
-    news = get_latest_news()
+        text = article.get_text(
+            "\n",
+            strip=True
+        )
 
-    if not news:
-        print("Новости не найдены")
     else:
-        print("Заголовок:", news["title"])
-        print("Ссылка:", news["url"])
-        print()
 
-        text = parse_news(news["url"])
-        print(text[:2000])
+        text = soup.get_text(
+            "\n",
+            strip=True
+        )
+
+
+    # чистим пустые строки
+
+    lines = []
+
+    for line in text.split("\n"):
+
+        line = line.strip()
+
+        if line:
+            lines.append(line)
+
+
+    return "\n".join(lines)
