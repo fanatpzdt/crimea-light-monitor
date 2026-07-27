@@ -79,34 +79,29 @@ def parse_news(url):
 
     r.encoding = "utf-8"
 
+
     soup = BeautifulSoup(
         r.text,
         "html.parser"
     )
 
 
-    # удаляем мусор
-    for tag in soup([
-        "script",
-        "style",
-        "header",
-        "footer",
-        "nav"
-    ]):
+    # убираем мусор
+    for tag in soup(
+        [
+            "script",
+            "style",
+            "header",
+            "footer",
+            "nav"
+        ]
+    ):
         tag.decompose()
 
 
-    # ищем основной контент новости
-    article = (
-        soup.find("article")
-        or
-        soup.find(
-            class_="news-detail"
-        )
-        or
-        soup.find(
-            class_="content"
-        )
+    # ищем основной текст новости
+    article = soup.find(
+        "article"
     )
 
 
@@ -125,8 +120,7 @@ def parse_news(url):
         )
 
 
-    # чистим пустые строки
-
+    # убираем пустые строки
     lines = []
 
     for line in text.split("\n"):
@@ -137,17 +131,4 @@ def parse_news(url):
             lines.append(line)
 
 
-    return "\n".join(lines)
-
-def parse_news(url):
-    r = requests.get(url, timeout=10)
-    r.encoding = "utf-8"
-
-    soup = BeautifulSoup(r.text, "html.parser")
-
-    article = soup.find("div", class_="itemFullText")
-
-    if article:
-        return article.get_text("\n", strip=True)
-
-    return soup.get_text("\n", strip=True)
+    return "\n\n".join(lines)
