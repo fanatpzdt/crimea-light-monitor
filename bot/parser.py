@@ -79,77 +79,40 @@ def parse_news(url):
 
     r.encoding = "utf-8"
 
+
     soup = BeautifulSoup(
         r.text,
         "html.parser"
     )
 
 
-    # весь текст страницы
-    text = soup.get_text(
-        "\n",
-        strip=True
+    article = soup.find(
+        "div",
+        attrs={
+            "itemprop": "articleBody"
+        }
     )
 
 
-    # ищем начало новости
-    start_words = [
-        "Из-за внешнего воздействия",
-        "В связи с",
-        "В результате"
-    ]
-
-    start = None
-
-    for word in start_words:
-        pos = text.find(word)
-
-        if pos != -1:
-            start = pos
-            break
-
-
-    if start is None:
+    if not article:
         return "Не удалось найти текст новости"
 
 
-    text = text[start:]
+    # убираем HTML, оставляем текст
+    paragraphs = []
+
+    for p in article.find_all("p"):
+
+        text = p.get_text(
+            " ",
+            strip=True
+        )
+
+        if text:
+            paragraphs.append(text)
 
 
-    # обрезаем конец мусора
-    stop_words = [
-        "Благодарим",
-        "Телефон",
-        "Адрес",
-        "Пресс-служба",
-        "Поделиться"
-    ]
+    result = "\n\n".join(paragraphs)
 
 
-    for word in stop_words:
-
-        pos = text.find(word)
-
-        if pos != -1:
-            text = text[:pos]
-
-
-    # чистим строки
-
-    lines = []
-
-    for line in text.split("\n"):
-
-        line = line.strip()
-
-        if (
-            line
-            and len(line) > 10
-        ):
-            lines.append(line)
-
-
-    result = "\n\n".join(lines)
-
-
-    return result[:1800]
+    return result[:2500]
