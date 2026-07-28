@@ -1,19 +1,10 @@
-from parser import get_latest_news, parse_news
+import requests
 
+url = "https://crimea-energy.ru/about/news/13406-o-vremennykh-ogranicheniyakh-elektrosnabzheniya"
 
-news = get_latest_news()
+r = requests.get(url)
 
-print(news)
+with open("page.html", "w", encoding="utf-8") as f:
+    f.write(r.text)
 
-
-if news:
-
-    text = parse_news(
-        news["url"]
-    )
-
-    print("\n---НОВОСТЬ---\n")
-
-    print(
-        text[:2000]
-    )
+print("Страница сохранена")
